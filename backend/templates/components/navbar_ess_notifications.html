@@ -1,0 +1,41 @@
+<div x-data="{ open: false, hasUnread: {{ ess_notifications_count|yesno:'true,false' }} }" class="relative">
+    <button @click="open = !open; if(hasUnread) { hasUnread = false; fetch('/ess/notifications/mark-all-read/'); }" @click.away="open = false" class="relative p-2 text-slate-300 hover:text-white transition-colors">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+        <span x-show="hasUnread" class="absolute top-1 right-1.5 flex h-3 w-3" style="display: none;">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500 border-2 border-[#06041c]"></span>
+        </span>
+    </button>
+    
+    <div x-show="open" 
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 translate-y-2"
+            class="absolute right-0 mt-2 w-80 bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden z-50 hidden"
+            :class="{ 'hidden': false }" style="display: none;">
+        <div class="px-4 py-3 border-b border-white/10 bg-white/5 flex justify-between items-center">
+            <h3 class="font-bold text-white text-sm">Notifications</h3>
+            {% if ess_notifications_count > 0 %}
+                <span class="bg-indigo-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ ess_notifications_count }}</span>
+            {% endif %}
+        </div>
+        <div class="max-h-[300px] overflow-y-auto">
+            {% if ess_notifications %}
+                {% for notif in ess_notifications %}
+                <a href="/ess/notification/{{ notif.pk }}/read/" class="block px-4 py-3 hover:bg-white/5 border-b border-white/5 transition-colors group">
+                    <p class="text-sm text-slate-300 group-hover:text-white transition-colors leading-tight">{{ notif.message }}</p>
+                    <p class="text-[10px] text-slate-500 mt-1.5 font-medium">{{ notif.created_at|timesince }} ago</p>
+                </a>
+                {% endfor %}
+            {% else %}
+                <div class="px-4 py-6 text-center text-slate-500 text-sm">
+                    <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                    No new notifications
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

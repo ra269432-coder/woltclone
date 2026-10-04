@@ -24,18 +24,9 @@ const reports = [
 
 export default function ReportsPage() {
   const handleDownload = (title: string) => {
-    // Generate a dummy file download for the demo
-    const content = `Mock PDF Content for ${title}\nGenerated on: ${new Date().toLocaleString()}`;
-    const blob = new Blob([content], { type: "application/pdf" });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${title.replace(/\s+/g, "_")}_2026.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Use the actual backend endpoint to generate and download the PDF
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    window.open(`${backendUrl}/management/hr/reports/download/?report=${encodeURIComponent(title)}`, '_blank');
   };
 
   return (

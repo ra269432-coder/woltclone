@@ -47,7 +47,7 @@ export function Stats() {
             <span className="text-blue-400 font-bold tracking-[0.2em] uppercase mb-4 block flex items-center gap-4">
               <span className="w-12 h-1 bg-blue-400 inline-block"></span> {t("statsSection.tag")}
             </span>
-            <h2 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter leading-[1.05]">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 tracking-tighter leading-[1.05]">
               {t("statsSection.titleLine1")} <br/> {t("statsSection.titleLine2")}
             </h2>
             <p className="text-xl text-slate-300 leading-relaxed font-medium">
@@ -75,7 +75,7 @@ export function Stats() {
               </div>
               
               <div className="relative z-10">
-                <div className="text-6xl md:text-7xl font-black tracking-tighter mb-4 text-white drop-shadow-lg">
+                <div className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tighter mb-4 text-white drop-shadow-lg">
                   {stat.value}
                 </div>
                 <div className="text-xl font-bold text-blue-200 mb-4">

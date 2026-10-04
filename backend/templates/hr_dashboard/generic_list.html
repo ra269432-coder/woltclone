@@ -1,0 +1,355 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[95%] mx-auto space-y-6" x-data="{ searchQuery: '' }">
+
+    <!-- Header Section -->
+    <div class="flex justify-between items-center relative z-10">
+        <div class="animate-slide-up">
+            <h2 class="text-3xl font-extrabold text-white tracking-tight drop-shadow-sm flex items-center gap-3">
+                {{ page_title|default:"HR Management" }}
+            </h2>
+            <p class="text-slate-300 mt-2 font-medium">Manage your foundation staff, records, and requests.</p>
+        </div>
+        <div class="flex gap-3 animate-slide-up" style="animation-delay: 100ms;">
+            <button class="px-5 py-2.5 bg-[#06041c]/40 backdrop-blur-md border border-white/10 text-slate-300 rounded-2xl hover:bg-white/10 hover:text-indigo-400 hover:border-indigo-500/50 transition-all duration-300 font-bold text-sm shadow-[0_4px_20px_rgb(0,0,0,0.2)] flex items-center group">
+                <svg class="w-4 h-4 mr-2 text-slate-400 group-hover:text-indigo-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                Export Report
+            </button>
+            {% if create_url %}
+            <a href="{{ create_url }}" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 border border-transparent text-white rounded-2xl hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 font-bold text-sm shadow-[0_4px_20px_rgba(37,99,235,0.4)] hover:shadow-[0_6px_25px_rgba(37,99,235,0.6)] flex items-center group hover:-translate-y-0.5">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                Add New
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if page_title == 'Attendance' %}
+    <!-- Custom Attendance Dashboard via Alpine & Chart.js -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-slide-up" style="animation-delay: 150ms;" x-data="attendanceDashboard()" x-init="initChart()">
+        <!-- Left: Employee Selector -->
+        <div class="lg:col-span-1 bg-[#06041c]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 relative z-20 shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+            <h3 class="text-slate-400 text-sm font-bold uppercase tracking-wider mb-4">Select Employee</h3>
+            <div class="relative">
+                <select x-model="selectedEmp" @change="updateDashboard()" class="w-full bg-[#06041c]/80 border border-white/10 text-white font-medium rounded-xl px-4 py-3 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <template x-for="emp in employees" :key="emp.id">
+                        <option :value="emp.id" x-text="emp.name"></option>
+                    </template>
+                </select>
+                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 rounded-2xl p-6 relative overflow-hidden">
+                <h3 class="text-indigo-300 font-medium text-sm flex items-center gap-2 mb-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    Remaining Leaves
+                </h3>
+                <div class="flex items-end gap-2">
+                    <span class="text-4xl font-bold text-white" x-text="currentData.leavesLeft"></span>
+                    <span class="text-indigo-300 mb-1 font-medium">days</span>
+                </div>
+                <div class="w-full bg-white/10 h-2 rounded-full mt-5 overflow-hidden">
+                    <div class="bg-indigo-400 h-full rounded-full transition-all duration-500" :style="'width: ' + ((currentData.leavesLeft / 24) * 100) + '%'"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right: Stats & Chart -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-[#06041c]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 flex items-center gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-white" x-text="currentData.present"></div>
+                        <div class="text-sm font-medium text-slate-400">Present</div>
+                    </div>
+                </div>
+                <div class="bg-[#06041c]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 flex items-center gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+                    <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-500/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-white" x-text="currentData.absent"></div>
+                        <div class="text-sm font-medium text-slate-400">Absent</div>
+                    </div>
+                </div>
+                <div class="bg-[#06041c]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 flex items-center gap-4 shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-white" x-text="currentData.leave"></div>
+                        <div class="text-sm font-medium text-slate-400">On Leave</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-[#06041c]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 h-[260px] flex items-center justify-center relative z-10 shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
+                <canvas id="employeeAttendanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('alpine:init', () => {
+        
+        // Extract real data from Django rows context
+        const rawRows = [
+            {% for row in rows %}
+            {
+                name: "{{ row.columns.0|escapejs }}",
+                status: "{{ row.columns.4|escapejs }}"
+            },
+            {% endfor %}
+        ];
+
+        const empMap = {};
+        rawRows.forEach(row => {
+            if (!empMap[row.name]) {
+                empMap[row.name] = { id: row.name, name: row.name, present: 0, absent: 0, leave: 0, leavesLeft: 24 };
+            }
+            if (row.status === 'Present' || row.status === 'Late' || row.status === 'Half Day') {
+                empMap[row.name].present += 1;
+            } else if (row.status === 'Absent') {
+                empMap[row.name].absent += 1;
+            } else if (row.status === 'Leave' || row.status === 'On Leave') {
+                empMap[row.name].leave += 1;
+                empMap[row.name].leavesLeft -= 1;
+            }
+        });
+
+        const extractedEmployees = Object.values(empMap);
+        if (extractedEmployees.length === 0) {
+            extractedEmployees.push({ id: 'none', name: 'No records found', present: 0, absent: 0, leave: 0, leavesLeft: 0 });
+        }
+
+        // Add 'All Employees' option if there are multiple employees
+        if (extractedEmployees.length > 1 && extractedEmployees[0].id !== 'none') {
+            let totalPresent = 0, totalAbsent = 0, totalLeave = 0;
+            extractedEmployees.forEach(e => {
+                totalPresent += e.present;
+                totalAbsent += e.absent;
+                totalLeave += e.leave;
+            });
+            extractedEmployees.unshift({ 
+                id: 'all', 
+                name: 'All Employees', 
+                present: totalPresent, 
+                absent: totalAbsent, 
+                leave: totalLeave, 
+                leavesLeft: 24 
+            });
+        }
+
+        Alpine.data('attendanceDashboard', () => ({
+            employees: extractedEmployees,
+            selectedEmp: extractedEmployees[0].id,
+            chartInstance: null,
+            get currentData() {
+                return this.employees.find(e => e.id === this.selectedEmp) || this.employees[0];
+            },
+            initChart() {
+                const ctx = document.getElementById('employeeAttendanceChart');
+                if(!ctx) return;
+                
+                Chart.defaults.color = '#94a3b8';
+                Chart.defaults.font.family = "'Inter', sans-serif";
+                
+                this.chartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Present', 'Absent', 'Leave'],
+                        datasets: [{
+                            data: [this.currentData.present, this.currentData.absent, this.currentData.leave],
+                            backgroundColor: ['#10b981', '#f43f5e', '#f59e0b'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '75%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { padding: 20, font: { size: 13, family: "'Inter', sans-serif" }, color: '#e2e8f0' }
+                            }
+                        }
+                    }
+                });
+                
+                setTimeout(() => {
+                    this.updateTableFilter();
+                }, 100);
+            },
+            updateDashboard() {
+                if(this.chartInstance) {
+                    this.chartInstance.data.datasets[0].data = [this.currentData.present, this.currentData.absent, this.currentData.leave];
+                    this.chartInstance.update();
+                }
+                this.updateTableFilter();
+            },
+            updateTableFilter() {
+                const searchInput = document.querySelector('input[x-model="searchQuery"]');
+                if(searchInput) {
+                    if (this.selectedEmp === 'all' || this.selectedEmp === 'none') {
+                        searchInput.value = '';
+                    } else {
+                        searchInput.value = this.currentData.name;
+                    }
+                    searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+        }))
+    })
+    </script>
+    {% endif %}
+
+    <!-- Table Container -->
+    <div class="bg-[#06041c]/60 backdrop-blur-xl rounded-3xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.2)] overflow-hidden relative z-10 animate-slide-up" style="animation-delay: 200ms;">
+        
+        <!-- Search and Filters -->
+        <div class="p-6 border-b border-white/10 flex items-center gap-4 bg-white/5">
+            <div class="relative flex-1 max-w-md group">
+                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" x-model="searchQuery" placeholder="Search records..." class="w-full pl-11 pr-4 py-2.5 bg-[#06041c]/40 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 text-slate-200 text-sm transition-all shadow-inner placeholder-slate-500" />
+            </div>
+            
+            <div class="flex items-center gap-4 ml-auto">
+                <div class="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-[#06041c]/40 border border-white/10 rounded-xl text-slate-300 text-sm font-medium">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Today: {% now "d M Y" %}</span>
+                </div>
+                <div class="text-sm font-medium text-slate-400 flex items-center gap-2 bg-[#06041c]/40 border border-white/10 px-4 py-2.5 rounded-xl">
+                    Total: <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 rounded-md font-bold">{{ page_obj.paginator.count|default:object_list.count }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dynamic Table -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse whitespace-nowrap">
+                <thead>
+                    <tr class="bg-[#06041c]/40 border-b border-white/10 text-xs text-slate-400 uppercase tracking-wider">
+                        {% for col in columns %}
+                        <th class="px-6 py-5 font-bold {% if forloop.last and col == 'Actions' %}text-right{% endif %}">
+                            {{ col }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/10 text-sm bg-transparent">
+                    {% for row in rows %}
+                    <tr class="hover:bg-white/5 transition-colors group" x-show="searchQuery === '' || '{{ row.columns|join:' ' |escapejs }}'.toLowerCase().includes(searchQuery.toLowerCase())">
+                        
+                        {% for cell_value in row.columns %}
+                        <td class="px-6 py-5 text-slate-300 font-medium">
+                            <!-- Dynamic Content Formatting -->
+                            {% if cell_value == 'Active' or cell_value == 'Approved' or cell_value == 'Completed' or cell_value == 'Paid' or cell_value == 'Present' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>{{ cell_value }}
+                                </span>
+                            {% elif cell_value == 'On Leave' or cell_value == 'Pending' or cell_value == 'Upcoming' or cell_value == 'Ongoing' or cell_value == 'Draft' or cell_value == 'Late' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5"></span>{{ cell_value }}
+                                </span>
+                            {% elif cell_value == 'Terminated' or cell_value == 'Rejected' or cell_value == 'Cancelled' or cell_value == 'Failed' or cell_value == 'Expired' or cell_value == 'Absent' or cell_value == 'Closed' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30 shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500 mr-1.5"></span>{{ cell_value }}
+                                </span>
+                            {% elif cell_value == 'Resigned' %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-slate-500/20 text-slate-300 border border-slate-500/30 shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-400 mr-1.5"></span>{{ cell_value }}
+                                </span>
+                            {% else %}
+                                {% if forloop.parentloop.counter == 1 and forloop.counter == 2 %}
+                                <!-- E.g., The name column, let's add an avatar if it's the second column and looks like a name -->
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center justify-center font-bold flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                                            {{ cell_value|make_list|first|upper }}
+                                        </div>
+                                        <span class="font-bold text-white text-base">{{ cell_value }}</span>
+                                    </div>
+                                {% else %}
+                                    {% if cell_value == '-' %}
+                                        <span class="text-slate-500">{{ cell_value }}</span>
+                                    {% else %}
+                                        {{ cell_value }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+
+                        {% if 'Actions' in columns %}
+                        <td class="px-6 py-5 text-right whitespace-nowrap">
+                            <div class="flex items-center justify-end gap-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                                {% if row.extra_actions %}
+                                    {% for action in row.extra_actions %}
+                                    <a href="{{ action.url }}" target="{{ action.target|default:'_self' }}" class="p-2 {% if action.icon == 'approve' %}hover:bg-emerald-500/20 text-slate-400 hover:text-emerald-400{% elif action.icon == 'reject' %}hover:bg-rose-500/20 text-slate-400 hover:text-rose-400{% else %}hover:bg-white/10 text-slate-400 hover:text-white{% endif %} rounded-xl transition-colors" title="{{ action.label }}">
+                                        {% if action.icon == 'approve' %}
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                        {% elif action.icon == 'reject' %}
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                        {% else %}
+                                        <!-- Default View Icon -->
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                        {% endif %}
+                                    </a>
+                                    {% endfor %}
+                                {% endif %}
+                                <a href="{{ row.edit_url }}" class="p-2 hover:bg-blue-500/20 rounded-xl text-slate-400 hover:text-blue-400 transition-colors" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </a>
+                                <a href="{{ row.delete_url }}" class="p-2 hover:bg-rose-500/20 rounded-xl text-slate-400 hover:text-rose-400 transition-colors" title="Delete">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </a>
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{{ columns|length }}" class="px-6 py-16 text-center">
+                            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#06041c]/40 border border-white/10 mb-4 shadow-inner">
+                                <svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            </div>
+                            <h3 class="text-white font-extrabold text-xl mb-2">No items found</h3>
+                            <p class="text-slate-400 font-medium text-sm">Get started by creating a new entry.</p>
+                            {% if create_url %}
+                            <a href="{{ create_url }}" class="inline-flex items-center gap-2 mt-6 bg-white/10 hover:bg-white/20 text-white rounded-xl px-5 py-2.5 font-bold transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                                Add New Entry
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="p-6 border-t border-white/10 bg-white/5 flex justify-between items-center">
+            <span class="text-sm font-medium text-slate-400">Showing page <span class="font-bold text-white">{{ page_obj.number }}</span> of {{ page_obj.paginator.num_pages }}</span>
+            <div class="flex gap-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-[#06041c]/40 border border-white/10 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-all shadow-sm">Prev</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-[#06041c]/40 border border-white/10 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-white transition-all shadow-sm">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

@@ -3,79 +3,73 @@
 import { ArrowLeft, Package, HeartPulse, GraduationCap, CheckCircle2, Globe, Users, Award } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/api/client";
+
+const VISUAL_STYLES = [
+  { icon: <Package className="w-8 h-8 text-orange-600" />, color: "bg-orange-50", iconColor: "text-orange-600", borderColor: "border-orange-200" },
+  { icon: <HeartPulse className="w-8 h-8 text-emerald-600" />, color: "bg-emerald-50", iconColor: "text-emerald-600", borderColor: "border-emerald-200" },
+  { icon: <GraduationCap className="w-8 h-8 text-blue-600" />, color: "bg-blue-50", iconColor: "text-blue-600", borderColor: "border-blue-200" }
+];
 
 export default function ProgramsPage() {
   const { language } = useLanguage();
   const isBn = language === 'bn';
+  const [programs, setPrograms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const programs = [
-    {
-      id: "relief",
-      title: isBn ? "মানবিক ত্রাণ ও দুর্যোগ প্রতিক্রিয়া" : "Humanitarian Relief & Disaster Response",
-      subtitle: isBn ? "সংকটের দ্রুত প্রতিক্রিয়া এবং দুর্বল সম্প্রদায়ের জন্য প্রয়োজনীয় সহায়তা।" : "Rapid response to crises and essential support for vulnerable communities.",
-      description: isBn ? "প্রাকৃতিক দুর্যোগ এবং অর্থনৈতিক সংকটের সময়ে, WOLT ফাউন্ডেশন তাৎক্ষণিক জীবন রক্ষাকারী সহায়তা প্রদান করে। আমরা খাদ্য নিরাপত্তার দিকে মনোনিবেশ করি এবং নিশ্চিত করি যে সবচেয়ে প্রান্তিক জনগোষ্ঠীর যখন সবচেয়ে বেশি প্রয়োজন তখন তাদের মৌলিক প্রয়োজনীয় জিনিসগুলিতে অ্যাক্সেস রয়েছে। আমাদের দলগুলো সারা বাংলাদেশে জরুরি অবস্থার প্রথম সারিতে কাজ করে।" : "In times of natural disasters and economic crises, WOLT Foundation provides immediate life-saving support. We focus on food security and ensuring that the most marginalized populations have access to basic necessities when they need them the most. Our teams operate on the frontlines of emergencies across Bangladesh.",
-      activities: isBn ? [
-        "জরুরি খাবার প্যাকেজ বিতরণ",
-        "সঙ্কট ব্যবস্থাপনা এবং দ্রুত প্রতিক্রিয়া দল",
-        "শীতবস্ত্র এবং কম্বল বিতরণ",
-        "দুর্যোগে ক্ষতিগ্রস্ত পরিবারের জন্য পুনর্বাসন সহায়তা"
-      ] : [
-        "Emergency food package distribution",
-        "Crisis management and rapid response teams",
-        "Winter clothing and blanket drives",
-        "Rehabilitation support for disaster-affected families"
-      ],
-      image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80",
-      icon: <Package className="w-8 h-8 text-orange-600" />,
-      color: "bg-orange-50",
-      iconColor: "text-orange-600",
-      borderColor: "border-orange-200"
-    },
-    {
-      id: "health",
-      title: isBn ? "স্বাস্থ্যসেবা অ্যাক্সেস এবং মেডিকেল ক্যাম্প" : "Healthcare Access & Medical Camps",
-      subtitle: isBn ? "অবহেলিত জনগোষ্ঠীর কাছে প্রয়োজনীয় স্বাস্থ্যসেবা পৌঁছে দেওয়া।" : "Bringing essential healthcare services directly to underserved populations.",
-      description: isBn ? "মানসম্মত স্বাস্থ্যসেবা পাওয়া একটি মৌলিক অধিকার। আমাদের স্বাস্থ্য কর্মসূচি প্রতিরোধমূলক যত্ন, মাতৃস্বাস্থ্য এবং পর্যাপ্ত চিকিৎসা পরিকাঠামোর অভাব রয়েছে এমন সম্প্রদায়কে বিনামূল্যে চিকিৎসা সহায়তা প্রদানের উপর দৃষ্টি নিবদ্ধ করে। যেখানে সবচেয়ে বেশি প্রয়োজন সেখানে উচ্চ-মানের যত্ন প্রদানের জন্য আমরা চিকিৎসা পেশাদারদের সাথে অংশীদারি করি।" : "Access to quality healthcare is a fundamental right. Our health program focuses on preventive care, maternal health, and providing free medical assistance to communities that lack adequate medical infrastructure. We partner with medical professionals to deliver high-quality care where it is most scarce.",
-      activities: isBn ? [
-        "প্রত্যন্ত গ্রামে বিনামূল্যে মেডিকেল ক্যাম্প",
-        "প্রয়োজনীয় ওষুধ বিতরণ",
-        "মাতৃ ও শিশু স্বাস্থ্য সচেতনতামূলক কর্মসূচি",
-        "বিশেষজ্ঞ চেক-আপ (চোখের যত্ন, ডেন্টাল ইত্যাদি)"
-      ] : [
-        "Free medical camps in remote villages",
-        "Distribution of essential medicines",
-        "Maternal and child health awareness programs",
-        "Specialized check-ups (eye care, dental, etc.)"
-      ],
-      image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=800&q=80",
-      icon: <HeartPulse className="w-8 h-8 text-emerald-600" />,
-      color: "bg-emerald-50",
-      iconColor: "text-emerald-600",
-      borderColor: "border-emerald-200"
-    },
-    {
-      id: "education",
-      title: isBn ? "শিক্ষা এবং যুব ক্ষমতায়ন" : "Education & Youth Empowerment",
-      subtitle: isBn ? "মানসম্মত শিক্ষার মাধ্যমে টেকসই ভবিষ্যতের ভিত্তি তৈরি করা।" : "Building the foundation for a sustainable future through quality learning.",
-      description: isBn ? "আমরা বিশ্বাস করি যে দারিদ্র্যের চক্র ভাঙার জন্য শিক্ষা হল সবচেয়ে শক্তিশালী হাতিয়ার। WOLT ফাউন্ডেশন প্রাথমিক শিক্ষাকে সমর্থন করে, অন্তর্ভুক্তিমূলক শিক্ষার পরিবেশ এবং সুবিধাবঞ্চিত শিশুদের মধ্যে ঝরে পড়ার হার কমানোর ওপর দৃষ্টি নিবদ্ধ করে। আমরা নিশ্চিত করি যে প্রতিটি শিশুর সফল হওয়ার জন্য প্রয়োজনীয় উপকরণ এবং সহায়তা রয়েছে।" : "We believe that education is the most powerful tool for breaking the cycle of poverty. WOLT Foundation supports primary education, focusing on inclusive learning environments and reducing dropout rates among disadvantaged children. We ensure every child has the materials and support they need to succeed.",
-      activities: isBn ? [
-        "স্কুল সরবরাহ এবং পাঠ্যবই প্রদান",
-        "সুবিধাবঞ্চিত শিক্ষার্থীদের জন্য টিউশন সহায়তা",
-        "কমিউনিটি লার্নিং সেন্টার স্থাপন",
-        "যুব দক্ষতা উন্নয়ন এবং মেন্টরশিপ"
-      ] : [
-        "Providing school supplies and textbooks",
-        "Tuition support for underprivileged students",
-        "Establishing community learning centers",
-        "Youth skills development and mentorship"
-      ],
-      image: "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&q=80",
-      icon: <GraduationCap className="w-8 h-8 text-blue-600" />,
-      color: "bg-blue-50",
-      iconColor: "text-blue-600",
-      borderColor: "border-blue-200"
+  useEffect(() => {
+    async function loadPrograms() {
+      try {
+        const data = await fetchAPI('/api/programs/');
+        
+        const getContextImage = (title: string, defaultImage: string) => {
+          const t = (title || "").toLowerCase();
+          if (t.includes("humanitarian") || t.includes("disaster") || t.includes("relief")) {
+            return "/images/humanitarian_response_bd.jpg";
+          }
+          if (t.includes("health") && !t.includes("mental")) {
+            return "/images/social_development_bd.jpg";
+          }
+          if (t.includes("climate") || t.includes("environment")) {
+            return "/images/hero.jpg";
+          }
+          if (t.includes("mental")) {
+            return "/images/social_development.jpg";
+          }
+          if (t.includes("disability") || t.includes("inclusion")) {
+            return "/images/humanitarian_response.jpg";
+          }
+          if (t.includes("education") || t.includes("enterprise") || t.includes("youth")) {
+            return "/images/social_enterprise_bd.jpg";
+          }
+          return defaultImage;
+        };
+
+        const fallbackImages = [
+          "/images/humanitarian_response_bd.jpg", 
+          "/images/social_development_bd.jpg", 
+          "/images/humanitarian_response.jpg", 
+          "/images/social_development.jpg", 
+          "/images/hero.jpg", 
+          "/images/social_enterprise_bd.jpg"
+        ];
+
+        // Apply visual styles based on index
+        const mappedData = data.map((prog: any, index: number) => {
+          const style = VISUAL_STYLES[index % VISUAL_STYLES.length];
+          const fallbackImg = getContextImage(prog.title, fallbackImages[index % fallbackImages.length]);
+          return { ...prog, activities: prog.activities_list || [], ...style, id: prog.slug, image: prog.image || fallbackImg };
+        });
+        setPrograms(mappedData);
+      } catch (error) {
+        console.error("Failed to load programs:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadPrograms();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -179,7 +173,7 @@ export default function ProgramsPage() {
                       {isBn ? "প্রধান হস্তক্ষেপ" : "Key Interventions"}
                     </h4>
                     <ul className="space-y-4">
-                      {program.activities.map((activity, i) => (
+                      {program.activities.map((activity: string, i: number) => (
                         <li key={i} className="flex items-start gap-4">
                           <CheckCircle2 className={`w-6 h-6 ${program.iconColor} flex-shrink-0 mt-0.5`} />
                           <span className="text-slate-700 font-medium leading-relaxed">{activity}</span>
@@ -205,15 +199,15 @@ export default function ProgramsPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/visit#donate">
-              <button className="w-full sm:w-auto px-10 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/30 active:scale-95">
+<div className="inline-flex justify-center cursor-pointer w-full sm:w-auto px-10 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/30 active:scale-95">
                 {isBn ? "দান করুন" : "Make a Donation"}
-              </button>
-            </Link>
+              </div>
+</Link>
             <Link href="/teams/team">
-              <button className="w-full sm:w-auto px-10 py-4 bg-white/10 text-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all backdrop-blur-sm border border-white/20 active:scale-95">
+<div className="inline-flex justify-center cursor-pointer w-full sm:w-auto px-10 py-4 bg-white/10 text-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all backdrop-blur-sm border border-white/20 active:scale-95">
                 {isBn ? "আমাদের সাথে অংশীদার হন" : "Partner With Us"}
-              </button>
-            </Link>
+              </div>
+</Link>
           </div>
         </div>
       </section>

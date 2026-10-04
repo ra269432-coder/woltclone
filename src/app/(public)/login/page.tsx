@@ -4,33 +4,64 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { fetchAPI } from "@/lib/api/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Mock Auth Logic
-    const lowercaseEmail = email.toLowerCase();
-    if (lowercaseEmail.includes("admin") || lowercaseEmail.includes("hr")) {
-      // HR/Admin accounts (pre-created) go to the dashboard
-      router.push("/hr/dashboard");
-    } else {
-      // Normal users just go back home (no normal user dashboard needed yet)
-      router.push("/");
+    setLoading(true);
+    setError("");
+
+    try {
+      const data = await fetchAPI('/api/auth/login/', {
+        method: 'POST',
+        body: JSON.stringify({
+          email, // Wait, TokenObtainPairView expects username! Oh, maybe I need to use email as username, or fetch token with username?
+          // If TokenObtainPairView expects 'username' but the user types their email...
+          // I will use username! I will generate username from email just like register.
+          username: email.split("@")[0],
+          password
+        })
+      });
+
+      // Save tokens
+      localStorage.setItem("access", data.access);
+      localStorage.setItem("refresh", data.refresh);
+
+      // Redirect logic based on email
+      const lowercaseEmail = email.toLowerCase();
+      if (lowercaseEmail.includes("admin") || lowercaseEmail.includes("hr")) {
+        router.push("/hr/dashboard");
+      } else {
+        router.push("/");
+      }
+    } catch (err: any) {
+      console.error(err);
+      setError("Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-slate-50 px-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-sm border">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 pt-32 pb-12">
+      <div className="max-w-md w-full bg-white p-8 rounded-2xl shadow-sm border mt-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-wolt-blue mb-2">Welcome Back</h1>
           <p className="text-slate-500">Sign in to your WOLT account</p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
@@ -65,8 +96,8 @@ export default function LoginPage() {
             <Link href="#" className="text-wolt-blue hover:underline">Forgot password?</Link>
           </div>
 
-          <Button type="submit" className="w-full bg-wolt-blue hover:bg-wolt-blue/90 text-white rounded-lg py-6 text-lg">
-            Sign In
+          <Button type="submit" disabled={loading} className="w-full bg-wolt-blue hover:bg-wolt-blue/90 text-white rounded-lg py-6 text-lg disabled:opacity-50">
+            {loading ? "Signing In..." : "Sign In"}
           </Button>
         </form>
 

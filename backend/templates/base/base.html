@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}WOLT Dashboard{% endblock %}</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col font-sans text-slate-100 selection:bg-cyan-500 selection:text-white relative bg-slate-900">
+    <!-- Background Image -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <!-- High-quality NGO related background image from Unsplash (Community/Education/Children) -->
+        <img 
+            src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=2000&q=80" 
+            alt="NGO Background" 
+            class="w-full h-full object-cover"
+        />
+        <!-- Dark overlay to make the content readable -->
+        <div class="absolute inset-0 bg-slate-900/85 backdrop-blur-[2px]"></div>
+    </div>
+    
+    <!-- Wrapper for content to sit above background -->
+    <div class="relative z-10 flex flex-col min-h-screen">
+    {% include 'components/navbar.html' %}
+
+    <div class="flex-grow flex w-full relative z-10">
+        {% if user.is_authenticated %}
+            {% block sidebar %}
+            {% include 'components/sidebar.html' %}
+            {% endblock %}
+        {% endif %}
+
+        <main class="flex-grow p-6 md:p-8 lg:p-10 w-full overflow-hidden animate-fade-in">
+            {% if messages %}
+                <div class="mb-6 animate-slide-up">
+                    {% for message in messages %}
+                        {% include 'components/alerts.html' with type=message.tags message=message %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <footer class="bg-[#06041c]/60 backdrop-blur-md border-t border-white/10 p-4 text-center text-sm text-slate-400 font-medium mt-auto">
+        &copy; {% now "Y" %} Way of Light Trust. All rights reserved.
+    </footer>
+    </div>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

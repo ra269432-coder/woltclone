@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { ChairmanMessage } from "@/components/home/ChairmanMessage";
 
 export default function Page() {
   return (
@@ -32,28 +33,39 @@ export default function Page() {
               <p className="text-xl text-slate-600 leading-relaxed mb-8 font-medium">
                 {"Our distinguished board members provide oversight, strategic guidance, and ensure we uphold the highest standards of governance."}
               </p>
-              
+
               <div className="h-px bg-slate-100 w-full my-10"></div>
               
+              {/* Leadership Message Section */}
+              <div className="mb-12 rounded-3xl overflow-hidden shadow-sm border border-slate-100">
+                <ChairmanMessage />
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-12">
-                <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 transition-colors group hover:bg-blue-50/30">
-                  <div className="w-12 h-12 bg-white text-blue-600 rounded-xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
+                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 hover:border-blue-200 transition-all duration-300 group flex flex-col h-full">
+                  <div className="w-full h-52 rounded-2xl overflow-hidden mb-6 relative">
+                    <img 
+                      src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80" 
+                      alt="Strategic Oversight" 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-blue-900/10 group-hover:bg-transparent transition-colors duration-500"></div>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">{"Strategic Oversight"}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{"Ensuring long-term sustainability and adherence to our core mission."}</p>
+                  <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-blue-700 transition-colors px-1">{"Strategic Oversight"}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed px-1">{"Ensuring long-term sustainability and adherence to our core mission."}</p>
                 </div>
                 
-                <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-100 hover:border-pink-200 transition-colors group hover:bg-pink-50/30">
-                  <div className="w-12 h-12 bg-white text-pink-600 rounded-xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
+                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-pink-900/5 hover:border-pink-200 transition-all duration-300 group flex flex-col h-full">
+                  <div className="w-full h-52 rounded-2xl overflow-hidden mb-6 relative">
+                    <img 
+                      src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80" 
+                      alt="Transparency & Accountability" 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-pink-900/10 group-hover:bg-transparent transition-colors duration-500"></div>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">{"Transparency & Accountability"}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{"Committing to ethical practices and transparent reporting to our stakeholders."}</p>
+                  <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-pink-700 transition-colors px-1">{"Transparency & Accountability"}</h3>
+                  <p className="text-slate-600 text-sm leading-relaxed px-1">{"Committing to ethical practices and transparent reporting to our stakeholders."}</p>
                 </div>
               </div>
             </div>
@@ -65,9 +77,9 @@ export default function Page() {
                 <p className="text-slate-500 text-sm">Our team is ready to answer your questions.</p>
               </div>
               <Link href="/teams/team">
-                <button className="px-8 py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20 w-full sm:w-auto active:scale-[0.98]">
+                <div className="inline-flex justify-center cursor-pointer px-8 py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20 w-full sm:w-auto active:scale-[0.98]">
                   Contact Our Team
-                </button>
+                </div>
               </Link>
             </div>
           </div>

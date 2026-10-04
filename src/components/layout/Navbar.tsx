@@ -107,19 +107,6 @@ export function Navbar() {
                       </Link>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-[11px] uppercase text-slate-400 font-extrabold tracking-[0.2em] border-b border-slate-100 pb-3 mb-3">{t("nav.menu.socialEnterprise")}</h3>
-                    <div className="flex flex-col space-y-1">
-                      <Link href="/programs/bashundhara" className="p-2.5 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-3 font-semibold text-[14px] text-slate-800 group/item">
-                        <div className="bg-indigo-50 p-2 rounded-lg group-hover/item:bg-indigo-500 transition-all duration-300"><Building className="w-4 h-4 text-indigo-600 group-hover/item:text-white transition-colors" /></div> 
-                        <span className="group-hover/item:text-indigo-600 transition-colors">{t("nav.menu.bashundhara")}</span>
-                      </Link>
-                      <Link href="/programs/teer" className="p-2.5 rounded-xl hover:bg-slate-50 transition-all flex items-center gap-3 font-semibold text-[14px] text-slate-800 group/item">
-                        <div className="bg-cyan-50 p-2 rounded-lg group-hover/item:bg-cyan-500 transition-all duration-300"><Target className="w-4 h-4 text-cyan-600 group-hover/item:text-white transition-colors" /></div> 
-                        <span className="group-hover/item:text-cyan-600 transition-colors">{t("nav.menu.teer")}</span>
-                      </Link>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -205,9 +192,9 @@ export function Navbar() {
           </Link>
           <Link href="/#donate" className="group/btn relative">
             <div className="absolute inset-0 bg-blue-600 rounded-full blur-md opacity-40 group-hover/btn:opacity-60 transition-opacity duration-300"></div>
-            <Button className="relative bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-full px-6 py-5 text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:shadow-lg border border-blue-400/20">
+            <div className="relative bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-full px-6 py-5 text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:shadow-lg border border-blue-400/20 inline-flex items-center justify-center whitespace-nowrap">
               {t("nav.donate")}
-            </Button>
+            </div>
           </Link>
           <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 text-slate-600 hover:text-blue-600 transition-colors bg-slate-50 rounded-full hover:bg-blue-50">
             <Menu className="h-6 w-6" />
@@ -274,9 +261,9 @@ export function Navbar() {
         </div>
         <div className="p-6 border-t border-slate-100">
           <Link href="/#donate" onClick={() => setIsMobileMenuOpen(false)}>
-            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full py-6 text-lg font-bold uppercase tracking-wider">
+            <div className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-full py-6 text-lg font-bold uppercase tracking-wider inline-flex items-center justify-center whitespace-nowrap">
               {t("nav.donate")}
-            </Button>
+            </div>
           </Link>
         </div>
       </div>

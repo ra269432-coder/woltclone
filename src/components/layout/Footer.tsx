@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, MapPin, Phone, Mail } from "lucide-react";
+import { ArrowRight, MapPin, Mail } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function Footer() {
@@ -20,8 +20,8 @@ export function Footer() {
           {/* Column 1: About, Connect (Takes up more space) */}
           <div className="md:col-span-5 space-y-6">
             <div>
-              <Link href="/" className="inline-block mb-4 bg-white/5 backdrop-blur-sm p-3 rounded-xl border border-white/10 hover:border-white/20 transition-all shadow-xl">
-                <img src="/logo.png" alt="WOLT Foundation" className="h-10 w-auto object-contain" />
+              <Link href="/" className="inline-block mb-6 bg-white/10 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-white/20 hover:border-cyan-400/50 hover:bg-white/15 transition-all duration-300 shadow-2xl">
+                <img src="/logo.png" alt="WOLT Foundation" className="h-20 sm:h-24 w-auto object-contain" />
               </Link>
               <p className="text-base md:text-lg font-medium text-slate-300 leading-relaxed max-w-sm">
                 {t("footer.tagline")}
@@ -69,26 +69,8 @@ export function Footer() {
                     <MapPin className="w-4 h-4" />
                   </div>
                   <p className="leading-relaxed group-hover:text-slate-100 transition-colors">
-                    Flat 6B, House 49, Road 28,<br />
                     Gulshan 1, Dhaka.
                   </p>
-                </div>
-                <div className="flex items-center gap-3 group">
-                  <div className="bg-white/5 p-1 rounded-lg group-hover:bg-cyan-500/20 group-hover:text-cyan-400 transition-colors">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <a href="tel:+8801936618159" className="hover:text-cyan-400 transition-colors block">+880 1936-618159</a>
-                </div>
-              </div>
-
-              {/* USA Office */}
-              <div>
-                <h4 className="text-cyan-400 text-xs font-bold uppercase tracking-widest mb-1">USA Office</h4>
-                <div className="flex items-center gap-3 group">
-                  <div className="bg-white/5 p-1 rounded-lg group-hover:bg-cyan-500/20 group-hover:text-cyan-400 transition-colors">
-                    <Phone className="w-4 h-4" />
-                  </div>
-                  <a href="tel:+19172687374" className="hover:text-cyan-400 transition-colors block">+1 (917) 268-7374</a>
                 </div>
               </div>
 

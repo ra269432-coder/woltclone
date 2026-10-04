@@ -1,4 +1,4 @@
-import { MapPin, Mail, Phone, CalendarCheck } from "lucide-react";
+import { MapPin, Mail, CalendarCheck } from "lucide-react";
 
 export default function VisitPage() {
   return (
@@ -42,16 +42,7 @@ export default function VisitPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-900 mb-1">Address</h4>
-                    <p className="text-slate-600">Level 8, WOLT Tower<br/>Gulshan Avenue, Dhaka 1212<br/>Bangladesh</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center shrink-0">
-                    <Phone className="w-5 h-5 text-slate-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-slate-900 mb-1">Phone</h4>
-                    <p className="text-slate-600">+880 2 9876543 (Reception)<br/>+880 2 9876544 (Media inquiries)</p>
+                    <p className="text-slate-600">Flat 6B, House 49, Road 28<br/>Gulshan 1, Dhaka<br/>Bangladesh</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -60,22 +51,24 @@ export default function VisitPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-900 mb-1">Email</h4>
-                    <p className="text-slate-600">info@woltfoundation.org</p>
+                    <p className="text-slate-600">info@woltrust.org</p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Map Placeholder */}
-          <div className="bg-slate-200 rounded-3xl overflow-hidden h-[600px] relative">
-            <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80" alt="Map" className="w-full h-full object-cover opacity-50 grayscale" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white p-4 rounded-xl shadow-xl flex items-center gap-3">
-                <MapPin className="w-6 h-6 text-blue-600" />
-                <span className="font-bold text-slate-900">WOLT Headquarters</span>
-              </div>
-            </div>
+          {/* Interactive Map */}
+          <div className="bg-slate-200 rounded-3xl overflow-hidden h-[600px] relative shadow-inner border border-slate-200">
+            <iframe 
+              src="https://maps.google.com/maps?q=House%2049,%20Road%2028,%20Gulshan%201,%20Dhaka&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy"
+              title="WOLT Headquarters Location"
+            ></iframe>
           </div>
         </div>
       </section>

@@ -33,10 +33,10 @@ export function ChairmanMessage() {
       image: "/images/chairman.jpg",
       message: isBn ? [
         "আমাদের যাত্রা শুরু হয়েছিল একটি সহজ কিন্তু গভীর বিশ্বাস নিয়ে: প্রতিটি ব্যক্তি, তাদের পরিস্থিতি নির্বিশেষে, উন্নতির সুযোগ পাওয়ার যোগ্য। গ্রামীণ বাংলাদেশে আমরা অবিশ্বাস্য স্থিতিস্থাপকতা প্রত্যক্ষ করেছি।",
-        "সামাজিক উন্নয়ন, মানবিক প্রতিক্রিয়া এবং সামাজিক উদ্যোগের প্রতি আমাদের সমন্বিত দৃষ্টিভঙ্গির মাধ্যমে, আমরা কেবল সহায়তা প্রদান করছি না; আমরা টেকসই ইকোসিস্টেম তৈরি করছি। আমাদের লক্ষ্য হলো সম্প্রদায়গুলিকে তাদের নিজস্ব উন্নয়নের নেতৃত্ব দিতে এবং আগামী প্রজন্মের জন্য একটি উজ্জ্বল ভবিষ্যৎ তৈরি করতে সক্ষম করা।"
+        "সামাজিক উন্নয়ন এবং মানবিক প্রতিক্রিয়ার প্রতি আমাদের সমন্বিত দৃষ্টিভঙ্গির মাধ্যমে, আমরা কেবল সহায়তা প্রদান করছি না; আমরা টেকসই ইকোসিস্টেম তৈরি করছি। আমাদের লক্ষ্য হলো সম্প্রদায়গুলিকে তাদের নিজস্ব উন্নয়নের নেতৃত্ব দিতে এবং আগামী প্রজন্মের জন্য একটি উজ্জ্বল ভবিষ্যৎ তৈরি করতে সক্ষম করা।"
       ] : [
         "Our journey began with a simple but profound belief: that every individual, regardless of their circumstances, deserves the opportunity to thrive. In rural Bangladesh, we have witnessed incredible resilience.",
-        "Through our integrated approach to social development, humanitarian response, and social enterprise, we are not just providing aid; we are building sustainable ecosystems. Our goal is to empower communities to lead their own development and create a brighter future for generations to come."
+        "Through our integrated approach to social development and humanitarian response, we are not just providing aid; we are building sustainable ecosystems. Our goal is to empower communities to lead their own development and create a brighter future for generations to come."
       ],
       size: "large" // h-[500px]
     },
@@ -68,7 +68,7 @@ export function ChairmanMessage() {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-4">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tighter mb-4">
               {t("leadership.title")}
             </h2>
             <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto">

@@ -2,20 +2,44 @@
 
 import { motion } from "framer-motion";
 
-const partners = [
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/api/client";
+
+const defaultPartners = [
   { name: "EBF", src: "/partners/media_1787805003778.png" },
   { name: "Baptist Union of Scotland", src: "/partners/media_1787805012657.png" },
   { name: "Eglise Baptiste du Calvaire", src: "/partners/media_1787805025175.png" },
-  { name: "Baptist Gottingen", src: "/partners/media_1787805031290.png" },
-  { name: "Partner 5", src: "/partners/media_1787805038741.png" },
-  { name: "New Partner 1", src: "/partners/media_1787805074828.png" },
-  { name: "New Partner 2", src: "/partners/media_1787805083630.png" },
-  { name: "New Partner 3", src: "/partners/media_1787805089983.png" }
+  { name: "Baptist Gottingen", src: "/partners/media_1787805031290.png" }
 ];
 import { useLanguage } from "@/context/LanguageContext";
 
 export function InvestorsMarquee() {
   const { t } = useLanguage();
+  const [partners, setPartners] = useState<any[]>(defaultPartners);
+
+  useEffect(() => {
+    async function loadPartners() {
+      try {
+        const data = await fetchAPI('/api/partners/');
+        if (data) {
+          const defaultImages = [
+            "/partners/media_1787805003778.png",
+            "/partners/media_1787805012657.png",
+            "/partners/media_1787805025175.png",
+            "/partners/media_1787805031290.png"
+          ];
+          setPartners(data.map((p: any, idx: number) => ({
+            name: p.organization_name,
+            src: p.logo || defaultImages[idx % defaultImages.length]
+          })));
+        }
+      } catch (error) {
+        console.error("Failed to load partners:", error);
+      }
+    }
+    loadPartners();
+  }, []);
+
   return (
     <section className="py-12 bg-white overflow-hidden relative">
       <div className="container mx-auto px-4 relative z-10 mb-16">
@@ -45,13 +69,13 @@ export function InvestorsMarquee() {
           {[...partners, ...partners, ...partners].map((partner, idx) => (
             <div 
               key={idx} 
-              className="flex items-center justify-center mx-12 min-w-[200px]"
+              className="flex items-center justify-center mx-12 min-w-[150px] md:min-w-[200px]"
             >
-              <div className="relative h-24 w-48 flex items-center justify-center transition-all duration-300 hover:scale-105 group/logo">
+              <div className="transition-transform duration-300 hover:scale-110 group/logo cursor-pointer">
                 <img 
                   src={partner.src} 
                   alt={partner.name}
-                  className="max-h-full max-w-full object-contain grayscale opacity-60 transition-all duration-300 group-hover/logo:grayscale-0 group-hover/logo:opacity-100"
+                  className="h-16 md:h-20 w-auto object-contain grayscale opacity-70 transition-all duration-300 group-hover/logo:grayscale-0 group-hover/logo:opacity-100"
                 />
               </div>
             </div>

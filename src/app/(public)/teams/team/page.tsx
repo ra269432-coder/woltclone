@@ -1,12 +1,42 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ArrowLeft, User } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+
+interface Employee {
+  id: number;
+  name: string;
+  designation: string;
+  department: string;
+  image: string | null;
+}
 
 export default function Page() {
   const { language } = useLanguage();
   const isBn = language === 'bn';
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+    
+    fetch(`${apiUrl}/employees/`)
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
+      .then(data => {
+        setEmployees(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch employees:", err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -41,27 +71,36 @@ export default function Page() {
               
               <div className="h-px bg-slate-100 w-full my-10"></div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-12">
-                <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-100 hover:border-blue-200 transition-colors group hover:bg-blue-50/30">
-                  <div className="w-12 h-12 bg-white text-blue-600 rounded-xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">{isBn ? "নেতৃত্ব" : "Leadership"}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{isBn ? "আবেগ দ্বারা চালিত এবং অভিজ্ঞতা দ্বারা পরিচালিত, আমাদের নেতারা সংস্থার জন্য কৌশলগত দৃষ্টিভঙ্গি নির্ধারণ করেন।" : "Driven by passion and guided by experience, our leaders set the strategic vision for the organization."}</p>
+              {loading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 </div>
-                
-                <div className="bg-slate-50/50 p-8 rounded-2xl border border-slate-100 hover:border-pink-200 transition-colors group hover:bg-pink-50/30">
-                  <div className="w-12 h-12 bg-white text-pink-600 rounded-xl shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3">{isBn ? "মাঠ পর্যায়ের বিশেষজ্ঞ" : "Field Experts"}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed">{isBn ? "আমাদের মাঠ পর্যায়ের দলগুলি সবচেয়ে ঝুঁকিপূর্ণ সম্প্রদায়গুলিতে জীবন পরিবর্তনকারী প্রোগ্রামগুলি প্রয়োগ করে।" : "Our on-the-ground teams implement life-changing programs in the most vulnerable communities."}</p>
+              ) : employees.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 mb-12">
+                  {employees.map((emp) => (
+                    <div key={emp.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden hover:shadow-xl transition-all group flex flex-col items-center text-center p-6">
+                      <div className="w-32 h-32 rounded-full overflow-hidden mb-6 relative bg-slate-100 border-4 border-white shadow-md">
+                        {emp.image ? (
+                          <img src={emp.image} alt={emp.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400">
+                            <User className="w-12 h-12" />
+                          </div>
+                        )}
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-800 mb-1">{emp.name}</h3>
+                      <p className="text-blue-600 font-medium text-sm mb-2">{emp.designation}</p>
+                      {emp.department && (
+                        <span className="px-3 py-1 bg-slate-50 text-slate-500 text-xs rounded-full">{emp.department}</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </div>
+              ) : (
+                <div className="text-center py-12 text-slate-500">
+                  {isBn ? "কোন দলের সদস্য পাওয়া যায়নি।" : "No team members found."}
+                </div>
+              )}
             </div>
             
             {/* Footer Actions */}
@@ -71,10 +110,10 @@ export default function Page() {
                 <p className="text-slate-500 text-sm">{isBn ? "আমাদের দল আপনার প্রশ্নের উত্তর দিতে প্রস্তুত।" : "Our team is ready to answer your questions."}</p>
               </div>
               <Link href="/teams/team">
-                <button className="px-8 py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20 w-full sm:w-auto active:scale-[0.98]">
+<div className="inline-flex justify-center cursor-pointer px-8 py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20 w-full sm:w-auto active:scale-[0.98]">
                   {isBn ? "আমাদের দলের সাথে যোগাযোগ করুন" : "Contact Our Team"}
-                </button>
-              </Link>
+                </div>
+</Link>
             </div>
           </div>
         </div>

@@ -120,15 +120,15 @@ export default function Page() {
               </div>
               <div className="flex gap-4 w-full sm:w-auto">
                 <Link href="/programs" className="w-full sm:w-auto">
-                  <button className="px-6 py-3.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-all w-full sm:w-auto active:scale-[0.98]">
+<div className="inline-flex justify-center cursor-pointer px-6 py-3.5 bg-slate-100 text-slate-700 rounded-xl font-medium hover:bg-slate-200 transition-all w-full sm:w-auto active:scale-[0.98]">
                     {isBn ? "প্রোগ্রাম অন্বেষণ করুন" : "Explore Programs"}
-                  </button>
-                </Link>
+                  </div>
+</Link>
                 <Link href="/teams/team" className="w-full sm:w-auto">
-                  <button className="px-6 py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20 w-full sm:w-auto active:scale-[0.98]">
+<div className="inline-flex justify-center cursor-pointer px-6 py-3.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-md shadow-blue-600/20 w-full sm:w-auto active:scale-[0.98]">
                     {isBn ? "আমাদের দলে যোগ দিন" : "Join Our Team"}
-                  </button>
-                </Link>
+                  </div>
+</Link>
               </div>
             </div>
           </div>

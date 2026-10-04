@@ -17,7 +17,7 @@ export function AboutUsPreview() {
       link: "/about/vision-mission-values",
       color: "bg-blue-600",
       hoverColor: "group-hover:text-blue-600",
-      image: "/generated/about_vision_bd_1787806679583.jpg"
+      image: "/generated/about_vision_professional.jpg"
     },
     {
       title: isBn ? "আমাদের দল" : "Our Team",
@@ -26,7 +26,7 @@ export function AboutUsPreview() {
       link: "/teams/team",
       color: "bg-emerald-600",
       hoverColor: "group-hover:text-emerald-600",
-      image: "/generated/about_team_bd_1787806692466.jpg"
+      image: "/generated/about_team_professional.jpg"
     },
     {
       title: isBn ? "পরিচালনা পর্ষদ" : "Governing Board",
@@ -35,7 +35,7 @@ export function AboutUsPreview() {
       link: "/teams/governing-board",
       color: "bg-indigo-600",
       hoverColor: "group-hover:text-indigo-600",
-      image: "/generated/about_board_1787805722399.jpg"
+      image: "/generated/about_board_professional.jpg"
     }
   ];
 
@@ -62,21 +62,29 @@ export function AboutUsPreview() {
         <div className="absolute top-[20%] -right-[10%] w-[40%] h-[60%] rounded-full bg-indigo-500/10 blur-[120px] mix-blend-multiply"></div>
       </div>
       <div className="container mx-auto px-4 max-w-7xl relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-16 gap-8 lg:gap-16">
           <motion.div 
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6 }}
-            className="max-w-3xl"
+            className="lg:w-1/2"
           >
-            <span className="block text-blue-600 font-black tracking-[0.2em] uppercase text-sm mb-4 flex items-center gap-4">
-              <span className="w-12 h-1 bg-blue-600 inline-block"></span> {isBn ? "আমাদের সম্পর্কে" : "About Us"}
+            <span className="block text-blue-700 text-[13px] font-black tracking-[0.25em] uppercase mb-4 flex items-center gap-4">
+              <span className="w-12 h-1 bg-blue-700 inline-block"></span> {isBn ? "আমাদের সম্পর্কে" : "About Us"}
             </span>
-            <h2 className="text-5xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-[1.1] mb-6">
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#0F172A] tracking-tighter leading-[1.1]">
               {isBn ? <>আমরা কারা এবং <br/> আমাদের পথচলার প্রেরণা কী।</> : <>Who We Are & <br/> What Drives Us.</>}
             </h2>
-            <p className="text-xl text-slate-600 leading-relaxed max-w-2xl font-medium">
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6 }}
+            className="lg:w-1/2"
+          >
+            <p className="text-xl text-slate-600 leading-relaxed font-medium">
               {isBn ? "আমরা সারা দেশে টেকসই পরিবর্তন এবং দুর্বল সম্প্রদায়ের ক্ষমতায়নের জন্য প্রতিশ্রুতিবদ্ধ আবেগী ব্যক্তিদের একটি দল।" : "We are a collective of passionate individuals committed to driving sustainable change and empowering vulnerable communities across the nation."}
             </p>
           </motion.div>
@@ -97,7 +105,7 @@ export function AboutUsPreview() {
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
               <Link href={feature.link} className="group block h-full outline-none">
-                <div className="h-full bg-white rounded-[2rem] shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-200 flex flex-col group relative overflow-hidden">
+                <div className="h-full bg-white rounded-[2rem] shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-200 flex flex-col group relative overflow-hidden hover:-translate-y-2">
                   {/* Image Section (Top half) */}
                   <div className="relative h-60 w-full overflow-hidden">
                     <img 
@@ -116,7 +124,7 @@ export function AboutUsPreview() {
                       {feature.description}
                     </p>
                     <div className={`mt-auto flex items-center font-bold text-sm tracking-wide text-slate-800 ${feature.hoverColor} transition-colors uppercase`}>
-                      {isBn ? "আরও জানুন" : "Learn More"} <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-1 transition-transform" />
+                      {isBn ? "আরও জানুন" : "Learn More"} <ArrowRight className="w-5 h-5 ml-2 transform group-hover:translate-x-2 transition-transform" />
                     </div>
                   </div>
                 </div>

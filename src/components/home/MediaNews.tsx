@@ -3,76 +3,83 @@
 import { motion } from "framer-motion";
 import { Calendar, ArrowRight, Play, Newspaper, ExternalLink, Sparkles } from "lucide-react";
 import Link from "next/link";
-
-const featuredStory = {
-  title: "WOLT Foundation Launches 40+ Mobile Healthcare Units Across Sunamganj & Sylhet",
-  date: "October 24, 2024",
-  category: "Emergency Healthcare",
-  categoryColor: "bg-emerald-500 text-white",
-  image: "/images/humanitarian_response.jpg",
-  excerpt: "In direct response to severe floodings, emergency rescue boats and fully stocked mobile clinics have provided immediate care to over 45,000 isolated families across the floodplains.",
-  readTime: "4 min read",
-  link: "/resource/news"
-};
-
-const recentNews = [
-  {
-    title: "WOLT Relief Program: Serving with Compassion in Bangladesh",
-    date: "October 22, 2024",
-    category: "Relief Program",
-    categoryColor: "bg-orange-500 text-white",
-    image: "/images/humanitarian_response_bd.jpg",
-    link: "/resource/news"
-  },
-  {
-    title: "WOLT Education Program: Class 1 to 5 Education Provided",
-    date: "October 18, 2024",
-    category: "Education",
-    categoryColor: "bg-blue-500 text-white",
-    image: "/images/social_development_bd.jpg",
-    link: "/resource/news"
-  },
-  {
-    title: "WOLT Health Program: Free Medical Camps in 64 Districts",
-    date: "October 12, 2024",
-    category: "Healthcare",
-    categoryColor: "bg-teal-500 text-white",
-    image: "/images/social_development.jpg",
-    link: "/resource/news"
-  },
-  {
-    title: "WOLT Housing Project: Homes for the Homeless in Bangladesh",
-    date: "October 5, 2024",
-    category: "Housing",
-    categoryColor: "bg-pink-500 text-white",
-    image: "/images/social_enterprise_bd.jpg",
-    link: "/resource/news"
-  }
-];
-
-const mediaHighlights = [
-  {
-    title: "Documentary: Voices of the Coastline",
-    duration: "12:40",
-    views: "24K views",
-    type: "Documentary",
-    image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80",
-    link: "/resource/media"
-  },
-  {
-    title: "Special Report: Frontline Mobile Clinics in Action",
-    duration: "05:15",
-    views: "18K views",
-    type: "Report",
-    image: "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=600&q=80",
-    link: "/resource/media"
-  }
-];
-
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/api/client";
 import { useLanguage } from "@/context/LanguageContext";
+
+
 
 export function MediaNews() {
   const { t } = useLanguage();
+  const [featuredStory, setFeaturedStory] = useState<any>(null);
+  const [recentNews, setRecentNews] = useState<any[]>([]);
+  const [mediaHighlights, setMediaHighlights] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await fetchAPI('/api/news/');
+        // Find featured news
+        const featured = data.find((n: any) => n.featured);
+        // Find recent non-featured news
+        const recent = data.filter((n: any) => !n.featured).slice(0, 3);
+        
+        const fallbackImages = [
+            "/images/humanitarian_response_bd.jpg",
+            "/images/social_development_bd.jpg",
+            "/images/social_development.jpg",
+            "/images/social_enterprise_bd.jpg"
+        ];
+        
+        if (featured) {
+            setFeaturedStory({
+                title: featured.title,
+                date: new Date(featured.published_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+                category: featured.category || "General",
+                categoryColor: "bg-emerald-500 text-white",
+                image: featured.image || "/images/humanitarian_response.jpg",
+                excerpt: featured.short_description || featured.content.substring(0, 150) + "...",
+                readTime: "4 min read",
+                link: `/resource/news/${featured.slug}`
+            });
+        }
+        
+        setRecentNews(recent.map((n: any, idx: number) => ({
+            title: n.title,
+            date: new Date(n.published_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+            category: n.category || "General",
+            categoryColor: ["bg-orange-500 text-white", "bg-blue-500 text-white", "bg-teal-500 text-white"][idx % 3],
+            image: n.image || fallbackImages[idx % fallbackImages.length],
+            link: `/resource/news/${n.slug}`
+        })));
+        
+        // Fetch media
+        const mediaData = await fetchAPI('/api/media/');
+        const mediaImages = [
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80",
+            "https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=600&q=80"
+        ];
+        
+        setMediaHighlights(mediaData.slice(0, 2).map((m: any, idx: number) => {
+            const descParts = m.description ? m.description.split(' | ') : [];
+            return {
+                title: m.title,
+                duration: descParts[0] || "10:00",
+                views: descParts[1] || "10K views",
+                type: m.category || "Video",
+                image: m.file || mediaImages[idx % mediaImages.length],
+                link: `/resource/media`
+            };
+        }));
+      } catch (error) {
+        console.error("Failed to load data:", error);
+      }
+    }
+    loadData();
+  }, []);
+
+  const displayFeatured = featuredStory;
+
   return (
     <section className="py-16 bg-[#1E1B4B] text-white relative overflow-hidden">
       {/* Dynamic Background Gradients */}
@@ -88,16 +95,16 @@ export function MediaNews() {
             <span className="text-cyan-400 font-black tracking-[0.3em] uppercase text-sm mb-4 flex items-center gap-3">
               <Newspaper className="w-4 h-4 text-cyan-400" /> {t("media.tag")}
             </span>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[1.05]">
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tighter leading-[1.05]">
               {t("media.titleLine1")} <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400">{t("media.titleLine2")}</span>
             </h2>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/resource/news">
-              <button className="flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white text-white hover:text-slate-950 rounded-full font-bold transition-all duration-300 backdrop-blur-md border border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.4)]">
+              <div className="flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white text-white hover:text-slate-950 rounded-full font-bold transition-all duration-300 backdrop-blur-md border border-white/20 hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] cursor-pointer">
                 {t("media.allPress")} <ArrowRight className="w-5 h-5" />
-              </button>
+              </div>
             </Link>
           </div>
         </div>
@@ -111,21 +118,22 @@ export function MediaNews() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="lg:col-span-7"
+            className="lg:col-span-6"
           >
-            <Link href={featuredStory.link} className="group block h-full">
+            {displayFeatured && (
+              <Link href={displayFeatured.link} className="group block h-full">
               <div className="h-full bg-slate-800/80 rounded-[2.5rem] overflow-hidden border border-white/10 hover:border-cyan-500/50 shadow-2xl transition-all duration-500 flex flex-col group-hover:-translate-y-2">
                 <div className="relative h-[340px] w-full overflow-hidden">
                   <img 
-                    src={featuredStory.image} 
-                    alt={featuredStory.title} 
+                    src={displayFeatured.image} 
+                    alt={displayFeatured.title} 
                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
                   
                   <div className="absolute top-6 left-6 flex items-center gap-3">
-                    <span className={`px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider ${featuredStory.categoryColor} shadow-lg`}>
-                      {featuredStory.category}
+                    <span className={`px-4 py-2 rounded-full font-bold text-xs uppercase tracking-wider ${displayFeatured.categoryColor} shadow-lg`}>
+                      {displayFeatured.category}
                     </span>
                     <span className="px-3 py-1.5 rounded-full bg-black/50 backdrop-blur-md text-white/90 text-xs font-semibold">
                       {t("media.featured")}
@@ -134,19 +142,19 @@ export function MediaNews() {
 
                   <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between text-slate-300 text-xs font-semibold">
                     <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-cyan-400" /> {featuredStory.date}
+                      <Calendar className="w-4 h-4 text-cyan-400" /> {displayFeatured.date}
                     </span>
-                    <span>{featuredStory.readTime}</span>
+                    <span>{displayFeatured.readTime}</span>
                   </div>
                 </div>
 
                 <div className="p-8 sm:p-10 flex flex-col flex-grow justify-between">
                   <div>
                     <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 group-hover:text-cyan-400 transition-colors leading-tight">
-                      {featuredStory.title}
+                      {displayFeatured.title}
                     </h3>
                     <p className="text-slate-300 text-base sm:text-lg leading-relaxed font-medium mb-6">
-                      {featuredStory.excerpt}
+                      {displayFeatured.excerpt}
                     </p>
                   </div>
                   <div className="inline-flex items-center gap-3 font-bold text-cyan-400 text-sm uppercase tracking-widest group-hover:text-cyan-300">
@@ -155,10 +163,11 @@ export function MediaNews() {
                 </div>
               </div>
             </Link>
+            )}
           </motion.div>
 
-          {/* Right Column: 3 Recent News Items (5 Columns) */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          {/* Right Column: 3 Recent News Items (6 Columns) */}
+          <div className="lg:col-span-6 flex flex-col gap-6">
             {recentNews.map((news, idx) => (
               <motion.div
                 key={idx}
@@ -199,7 +208,7 @@ export function MediaNews() {
         </div>
 
         {/* Video / Media Highlights Strip */}
-        <div className="pt-8 border-t border-white/10">
+        <div className="mt-24 pt-16 border-t border-white/10">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-2xl font-black text-white flex items-center gap-3">
               <Play className="w-5 h-5 text-red-500 fill-current" /> {t("media.videoTag")}
@@ -219,13 +228,13 @@ export function MediaNews() {
                 transition={{ duration: 0.5, delay: idx * 0.15 }}
               >
                 <Link href={video.link} className="group block relative rounded-3xl overflow-hidden border border-white/10 shadow-xl">
-                  <div className="relative h-60 w-full overflow-hidden">
+                  <div className="relative h-72 w-full overflow-hidden">
                     <img 
                       src={video.image} 
                       alt={video.title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-75 group-hover:brightness-90"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent opacity-90"></div>
                     
                     {/* Play Button Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -234,15 +243,15 @@ export function MediaNews() {
                       </div>
                     </div>
 
-                    <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white border border-white/20">
+                    <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-md text-xs font-bold text-white border border-white/10 shadow-lg">
                       {video.duration}
                     </div>
 
-                    <div className="absolute bottom-4 left-6 right-6">
-                      <span className="text-xs font-bold uppercase tracking-wider text-red-400 mb-1 block">
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <span className="text-xs font-bold uppercase tracking-wider text-red-400 mb-2 block">
                         {video.type} • {video.views}
                       </span>
-                      <h4 className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+                      <h4 className="text-2xl font-bold text-white group-hover:text-cyan-300 transition-colors leading-tight shadow-sm">
                         {video.title}
                       </h4>
                     </div>

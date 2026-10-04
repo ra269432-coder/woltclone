@@ -5,6 +5,7 @@ import React from "react";
 interface Intervention {
   title: string;
   description: string;
+  image?: string;
 }
 
 interface Stat {
@@ -98,21 +99,6 @@ export function ProgramLayout({
                 </div>
               </div>
 
-              <div>
-                <h2 className="text-4xl font-bold text-slate-900 mb-8">Key Interventions</h2>
-                <div className="grid sm:grid-cols-2 gap-6">
-                  {interventions.map((intervention, i) => (
-                    <div key={i} className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-lg transition-shadow">
-                      <div className="w-12 h-12 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center mb-6">
-                        <CheckCircle2 className="w-6 h-6" />
-                      </div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-3">{intervention.title}</h3>
-                      <p className="text-slate-600 leading-relaxed">{intervention.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
             </div>
 
             {/* Sidebar (Right) */}
@@ -138,12 +124,42 @@ export function ProgramLayout({
                   Your contribution directly funds these critical interventions on the ground.
                 </p>
                 <Link href="/visit#donate">
-                  <button className="w-full py-4 bg-pink-600 hover:bg-pink-500 text-white rounded-xl font-bold transition-colors">
+                  <div className="w-full py-4 bg-pink-600 hover:bg-pink-500 text-white rounded-xl font-bold transition-colors inline-flex justify-center cursor-pointer">
                     Make a Donation
-                  </button>
+                  </div>
                 </Link>
               </div>
 
+            </div>
+          </div>
+
+          {/* Key Interventions (Full Width) */}
+          <div className="mt-16">
+            <h2 className="text-4xl font-bold text-slate-900 mb-8 text-center">Key Interventions</h2>
+            <div className={`grid gap-8 ${
+              interventions.length === 1 ? 'grid-cols-1 max-w-3xl mx-auto' : 
+              interventions.length === 2 ? 'md:grid-cols-2 max-w-5xl mx-auto' : 
+              'md:grid-cols-2 lg:grid-cols-3'
+            }`}>
+              {interventions.map((intervention, i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col h-full group">
+                  {intervention.image ? (
+                    <div className="h-56 w-full relative shrink-0 overflow-hidden">
+                      <img src={intervention.image} alt={intervention.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    </div>
+                  ) : (
+                    <div className="p-8 pb-0 shrink-0">
+                      <div className="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center">
+                        <CheckCircle2 className="w-7 h-7" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="p-8 flex-grow flex flex-col">
+                    <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors">{intervention.title}</h3>
+                    <p className="text-slate-600 leading-relaxed text-lg">{intervention.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

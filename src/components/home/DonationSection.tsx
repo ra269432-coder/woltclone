@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditCard, Lock, ShieldCheck, Heart, ArrowRight } from "lucide-react";
+import { CreditCard, Lock, ShieldCheck, Heart, ArrowRight, Smartphone, Building2 } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { motion } from "framer-motion";
@@ -12,6 +12,21 @@ const amounts = [25, 50, 100, 500];
 export function DonationSection() {
   const { t } = useLanguage();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(50);
+  const [donationType, setDonationType] = useState<"one-time" | "monthly">("one-time");
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "bkash" | "nagad">("card");
+
+  const getImpact = (amt: number | null) => {
+    if (!amt) return "Every contribution makes a difference.";
+    if (amt <= 25) return "Provides emergency medical supplies for one person.";
+    if (amt <= 50) return "Feeds a family in crisis for a month.";
+    if (amt <= 100) return "Sponsors a child's education and supplies for a year.";
+    return "Helps build long-term disaster resilience infrastructure.";
+  };
+
+  const getBDT = (usd: number | null) => {
+    if (!usd) return "";
+    return `(৳${(usd * 110).toLocaleString()})`;
+  };
 
   return (
     <section id="donate" className="py-16 bg-slate-50 relative overflow-hidden">
@@ -59,28 +74,50 @@ export function DonationSection() {
         >
           
           {/* Info Side */}
-          <div className="lg:w-5/12 bg-slate-950 text-white p-12 flex flex-col justify-between relative overflow-hidden">
+          <div className="lg:w-5/12 bg-slate-950 text-white p-12 flex flex-col gap-10 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-slate-950 to-slate-900 opacity-100 z-0"></div>
             <div className="absolute -top-[20%] -left-[20%] w-[100%] h-[100%] rounded-full bg-blue-500/10 blur-[100px] z-0"></div>
             
             <div className="relative z-10">
               <h3 className="text-4xl font-black mb-8 leading-tight tracking-tight">{t("donateSection.dollar")}</h3>
-              <ul className="space-y-6 mb-12 text-blue-100 font-medium text-lg">
+              <ul className="space-y-6 text-blue-100 font-medium text-lg">
                 <li className="flex items-center gap-4"><ShieldCheck className="w-8 h-8 text-blue-400 shrink-0" /> {t("donateSection.secure")}</li>
                 <li className="flex items-center gap-4"><ShieldCheck className="w-8 h-8 text-blue-400 shrink-0" /> {t("donateSection.transparent")}</li>
                 <li className="flex items-center gap-4"><ShieldCheck className="w-8 h-8 text-blue-400 shrink-0" /> {t("donateSection.grassroots")}</li>
               </ul>
             </div>
             
-            <div className="relative z-10 bg-black/10 backdrop-blur-md p-6 rounded-2xl border border-white/20">
+            <div className="relative z-10 bg-black/10 backdrop-blur-md p-6 rounded-2xl border border-white/20 mt-auto">
               <p className="text-lg font-bold leading-relaxed tracking-wide">{t("donateSection.quote")}</p>
             </div>
           </div>
 
           {/* Form Side */}
           <div className="lg:w-7/12 p-12 bg-white">
-            <form onSubmit={(e) => { e.preventDefault(); alert("Mock Payment Successful! Thank you for your donation."); }} className="space-y-8">
+            <form onSubmit={(e) => { e.preventDefault(); alert("Redirecting to secure hosted checkout..."); }} className="space-y-8">
               
+              {/* Toggle Frequency */}
+              <div className="flex bg-slate-100 p-1.5 rounded-2xl">
+                <button
+                  type="button"
+                  onClick={() => setDonationType("one-time")}
+                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${
+                    donationType === "one-time" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  One-time
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDonationType("monthly")}
+                  className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm transition-all duration-300 ${
+                    donationType === "monthly" ? "bg-blue-600 text-white shadow-sm shadow-blue-600/20" : "text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  Monthly
+                </button>
+              </div>
+
               {/* Amount Selection */}
               <div>
                 <label className="block text-sm font-black tracking-widest uppercase text-slate-400 mb-4">{t("donateSection.selectAmount")}</label>
@@ -90,13 +127,13 @@ export function DonationSection() {
                       key={amount}
                       type="button"
                       onClick={() => setSelectedAmount(amount)}
-                      className={`py-4 rounded-2xl border-2 font-black text-xl transition-all duration-300 ${
+                      className={`py-4 rounded-2xl border-2 font-black text-xl transition-all duration-300 flex flex-col items-center justify-center ${
                         selectedAmount === amount 
                           ? "border-blue-600 bg-blue-50 text-blue-600 scale-105 shadow-md shadow-blue-600/10" 
                           : "border-slate-200 text-slate-500 hover:border-blue-600/50 hover:text-blue-600"
                       }`}
                     >
-                      ${amount}
+                      <span>${amount}</span>
                     </button>
                   ))}
                 </div>
@@ -105,29 +142,60 @@ export function DonationSection() {
                     type="number" 
                     placeholder={t("donateSection.customAmount")} 
                     className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-blue-600 focus:bg-white transition-colors font-bold text-lg text-slate-900 placeholder:text-slate-400"
-                    onChange={(e) => setSelectedAmount(Number(e.target.value))}
+                    onChange={(e) => setSelectedAmount(Number(e.target.value) || null)}
                   />
+                </div>
+                {/* Impact Statement */}
+                <div className="mt-4 text-center bg-emerald-50 rounded-xl p-4 border border-emerald-100 text-emerald-800 flex flex-col sm:flex-row items-center justify-center gap-2">
+                  <Heart className="w-5 h-5 text-emerald-500 shrink-0" /> 
+                  <span className="font-semibold text-sm">{getImpact(selectedAmount)}</span>
                 </div>
               </div>
 
-              {/* Payment Details Mock */}
+              {/* Payment Methods */}
               <div>
-                <label className="block text-sm font-black tracking-widest uppercase text-slate-400 mb-4">{t("donateSection.paymentDetails")}</label>
-                <div className="space-y-4">
-                  <input type="text" placeholder={t("donateSection.cardName")} className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-blue-600 focus:bg-white transition-colors font-bold text-slate-900 placeholder:text-slate-400" required />
-                  <div className="relative">
-                    <CreditCard className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 w-6 h-6" />
-                    <input type="text" placeholder={t("donateSection.cardNumber")} className="w-full pl-16 pr-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-blue-600 focus:bg-white transition-colors font-mono font-bold text-slate-900 placeholder:text-slate-400" required />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="MM/YY" className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-blue-600 focus:bg-white transition-colors font-bold text-slate-900 placeholder:text-slate-400" required />
-                    <input type="text" placeholder="CVC" className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:outline-none focus:border-blue-600 focus:bg-white transition-colors font-bold text-slate-900 placeholder:text-slate-400" required />
-                  </div>
+                <label className="block text-sm font-black tracking-widest uppercase text-slate-400 mb-4">Payment Method</label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("card")}
+                    className={`py-4 px-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
+                      paymentMethod === "card" ? "border-blue-600 bg-blue-50 text-blue-600" : "border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                  >
+                    <CreditCard className="w-6 h-6" />
+                    <span className="font-bold text-sm">Card / Bank</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("bkash")}
+                    className={`py-4 px-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
+                      paymentMethod === "bkash" ? "border-pink-500 bg-pink-50 text-pink-600" : "border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                  >
+                    <Smartphone className="w-6 h-6" />
+                    <span className="font-bold text-sm">bKash</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod("nagad")}
+                    className={`py-4 px-4 rounded-2xl border-2 flex flex-col items-center gap-2 transition-all duration-300 ${
+                      paymentMethod === "nagad" ? "border-orange-500 bg-orange-50 text-orange-600" : "border-slate-200 text-slate-500 hover:border-slate-300"
+                    }`}
+                  >
+                    <Building2 className="w-6 h-6" />
+                    <span className="font-bold text-sm">Nagad</span>
+                  </button>
                 </div>
+                <p className="text-xs text-slate-500 mt-4 text-center font-medium">
+                  You will be redirected to our secure hosted checkout to complete your payment. No card data is stored on our servers.
+                </p>
               </div>
 
               <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl py-6 text-xl font-black flex items-center justify-center gap-3 transition-all duration-300 shadow-xl shadow-blue-600/20 group hover:-translate-y-1">
-                <Lock className="w-6 h-6 opacity-80" /> {t("donateSection.donateSecurely")} ${selectedAmount || 0} <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                <Lock className="w-6 h-6 opacity-80" /> 
+                Proceed to Checkout • ${selectedAmount || 0} {getBDT(selectedAmount)}
+                <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
               </button>
             </form>
           </div>

@@ -4,36 +4,29 @@ import { Briefcase, ArrowRight, MapPin, Clock } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/api/client";
+
 export default function CareersPage() {
   const { language } = useLanguage();
   const isBn = language === 'bn';
 
-  const jobs = [
-    { 
-      title: isBn ? "সিনিয়র প্রোগ্রাম ম্যানেজার - স্বাস্থ্য" : "Senior Program Manager - Health", 
-      location: isBn ? "ঢাকা সদর দপ্তর" : "Dhaka HQ", 
-      type: isBn ? "পূর্ণকালীন" : "Full-Time", 
-      department: isBn ? "প্রোগ্রাম" : "Programs" 
-    },
-    { 
-      title: isBn ? "এমএন্ডই স্পেশালিস্ট" : "M&E Specialist", 
-      location: isBn ? "সিলেট আঞ্চলিক অফিস" : "Sylhet Regional Office", 
-      type: isBn ? "পূর্ণকালীন" : "Full-Time", 
-      department: isBn ? "গবেষণা ও মূল্যায়ন" : "Research & Evaluation" 
-    },
-    { 
-      title: isBn ? "ফিল্ড কো-অর্ডিনেটর" : "Field Coordinator", 
-      location: isBn ? "কুড়িগ্রাম" : "Kurigram", 
-      type: isBn ? "চুক্তিভিত্তিক" : "Contract", 
-      department: isBn ? "মানবিক প্রতিক্রিয়া" : "Humanitarian Response" 
-    },
-    { 
-      title: isBn ? "কমিউনিকেশন অফিসার" : "Communications Officer", 
-      location: isBn ? "ঢাকা সদর দপ্তর" : "Dhaka HQ", 
-      type: isBn ? "পূর্ণকালীন" : "Full-Time", 
-      department: isBn ? "বহিরাগত বিষয়" : "External Affairs" 
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadJobs() {
+      try {
+        const data = await fetchAPI('/api/jobs/');
+        setJobs(data);
+      } catch (error) {
+        console.error("Failed to load jobs:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadJobs();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
@@ -78,13 +71,15 @@ export default function CareersPage() {
                 <h3 className="text-2xl font-bold text-slate-900 mb-4 group-hover:text-blue-600 transition-colors">{job.title}</h3>
                 <div className="flex flex-wrap items-center gap-6 text-sm text-slate-500 font-medium">
                   <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {job.location}</span>
-                  <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {job.type}</span>
+                  <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {job.employment_type}</span>
                 </div>
               </div>
               <div>
-                <button className="w-full md:w-auto px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
-                  {isBn ? "বিস্তারিত দেখুন" : "View Details"} <ArrowRight className="w-4 h-4" />
-                </button>
+                <Link href={`/careers/${job.slug}`}>
+                  <button className="w-full md:w-auto px-8 py-3 bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+                    {isBn ? "বিস্তারিত দেখুন" : "View Details"} <ArrowRight className="w-4 h-4" />
+                  </button>
+                </Link>
               </div>
             </div>
           ))}

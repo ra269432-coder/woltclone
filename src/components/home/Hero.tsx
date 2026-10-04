@@ -8,7 +8,8 @@ import { useRef } from "react";
 import { useLanguage } from "@/context/LanguageContext";
 
 export function Hero() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const isBn = language === 'bn';
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -32,7 +33,7 @@ export function Hero() {
   };
 
   return (
-    <section ref={ref} className="relative min-h-[92vh] flex flex-col justify-start overflow-hidden text-white bg-[#0B1120] pt-28 pb-10">
+    <section ref={ref} className="relative min-h-[100svh] lg:min-h-[90svh] flex flex-col justify-center overflow-hidden text-white bg-[#0B1120] pt-20 sm:pt-24 pb-6 sm:pb-8">
       {/* Heavy Dynamic Background */}
       <motion.div style={{ y: yBg }} className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-slate-950 z-10" />
@@ -41,7 +42,7 @@ export function Hero() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1531206715517-5c56108158d5?auto=format&fit=crop&w=1920&q=80')] opacity-[0.12] mix-blend-luminosity z-30 bg-cover bg-center" />
       </motion.div>
 
-      <div className="container relative z-40 px-4 py-8 lg:pt-8 lg:pb-12 max-w-7xl mx-auto">
+      <div className="container relative z-40 px-4 py-4 max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-12 gap-12 items-center">
           
           {/* Left Text Content */}
@@ -62,7 +63,7 @@ export function Hero() {
                 transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
                 className="inline-block text-2xl md:text-3xl font-black uppercase tracking-[0.3em] text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-blue-500 to-purple-500 bg-[length:200%_auto]"
               >
-                Way of Light Trust
+                {t("hero.titleLine1")} {t("hero.titleLine2")}
               </motion.div>
             </motion.div>
 
@@ -70,7 +71,7 @@ export function Hero() {
               variants={itemVariants} 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-xl mb-6 border border-white/10 hover:border-emerald-500/30 shadow-2xl transition-all cursor-pointer group"
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur-xl mb-4 border border-white/10 hover:border-emerald-500/30 shadow-2xl transition-all cursor-pointer group"
             >
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -79,55 +80,57 @@ export function Hero() {
               <span className="text-xs font-bold tracking-[0.2em] uppercase text-emerald-400 group-hover:text-emerald-300 transition-colors">{t("hero.badge")}</span>
             </motion.div>
             
-            <motion.h1 variants={itemVariants} className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter mb-8 leading-[1.02]">
-              {t("hero.titleLine1")} <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">{t("hero.titleLine2")}</span>
+            <motion.h1 variants={itemVariants} className="text-[2.5rem] sm:text-5xl md:text-6xl lg:text-[6rem] font-black tracking-tighter mb-4 sm:mb-6 leading-[1.1] sm:leading-[1.05]">
+              {isBn ? "ওয়ে অফ লাইট" : "Way of Light"} <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">
+                {isBn ? "ট্রাস্ট" : "Trust"}
+              </span>
             </motion.h1>
             
-            <motion.p variants={itemVariants} className="text-xl md:text-2xl text-slate-300 mb-10 leading-relaxed font-medium max-w-2xl">
+            <motion.p variants={itemVariants} className="text-base sm:text-lg md:text-xl text-slate-300 mb-6 sm:mb-8 leading-relaxed font-medium max-w-2xl">
               {t("hero.subtitle")}
             </motion.p>
 
-            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-5 mb-14">
+            <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-8 sm:mb-10">
               <Link href="#donate">
-                <Button size="lg" className="w-full sm:w-auto bg-[#3B82F6] text-white hover:bg-[#3B82F6]/90 rounded-full px-12 py-8 text-xl font-black shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all hover:scale-105 hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] group">
+                <div className="w-full sm:w-auto bg-[#3B82F6] text-white hover:bg-[#3B82F6]/90 rounded-full px-8 sm:px-10 py-4 sm:py-5 lg:py-6 text-base sm:text-lg font-black shadow-[0_0_40px_rgba(255,255,255,0.3)] transition-all hover:scale-105 hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] group inline-flex items-center justify-center cursor-pointer">
                   {t("hero.startDonating")}
-                  <ArrowRight className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" />
-                </Button>
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-2 transition-transform" />
+                </div>
               </Link>
               <Link href="/resource/media">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto rounded-full px-10 py-8 text-xl border-white/20 bg-white/5 hover:bg-white/10 hover:text-white font-bold backdrop-blur-md transition-all hover:scale-105">
+                <div className="w-full sm:w-auto rounded-full px-6 sm:px-8 py-4 sm:py-5 lg:py-6 text-base sm:text-lg border-white/20 bg-white/5 hover:bg-white/10 hover:text-white font-bold backdrop-blur-md transition-all hover:scale-105 inline-flex items-center justify-center cursor-pointer border">
                   <Play className="w-5 h-5 mr-3 fill-current" />
                   {t("hero.watchVideo")}
-                </Button>
+                </div>
               </Link>
             </motion.div>
 
             {/* Trust Badges */}
-            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-8 pt-8 border-t border-white/10">
-              <div className="flex items-center gap-3 text-slate-400 group">
-                <div className="bg-white/5 p-3 rounded-2xl group-hover:bg-emerald-500/20 transition-colors">
-                  <ShieldCheck className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <motion.div variants={itemVariants} className="flex flex-wrap items-center gap-4 sm:gap-6 pt-5 sm:pt-6 border-t border-white/10">
+              <div className="flex items-center gap-2 sm:gap-3 text-slate-400 group">
+                <div className="bg-white/5 p-2 sm:p-2.5 rounded-2xl group-hover:bg-emerald-500/20 transition-colors">
+                  <ShieldCheck className="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400 group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="text-sm font-bold uppercase tracking-widest group-hover:text-white transition-colors">{t("hero.trustSecure")}</span>
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest group-hover:text-white transition-colors">{t("hero.trustSecure")}</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-400 group">
-                <div className="bg-white/5 p-3 rounded-2xl group-hover:bg-blue-500/20 transition-colors">
-                  <Globe2 className="w-6 h-6 text-blue-400 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center gap-2 sm:gap-3 text-slate-400 group">
+                <div className="bg-white/5 p-2 sm:p-2.5 rounded-2xl group-hover:bg-blue-500/20 transition-colors">
+                  <Globe2 className="w-4 sm:w-5 h-4 sm:h-5 text-blue-400 group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="text-sm font-bold uppercase tracking-widest group-hover:text-white transition-colors">{t("hero.trustGlobal")}</span>
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest group-hover:text-white transition-colors">{t("hero.trustGlobal")}</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-400 group">
-                <div className="bg-white/5 p-3 rounded-2xl group-hover:bg-purple-500/20 transition-colors">
-                  <Users className="w-6 h-6 text-purple-400 group-hover:scale-110 transition-transform" />
+              <div className="flex items-center gap-2 sm:gap-3 text-slate-400 group">
+                <div className="bg-white/5 p-2 sm:p-2.5 rounded-2xl group-hover:bg-purple-500/20 transition-colors">
+                  <Users className="w-4 sm:w-5 h-4 sm:h-5 text-purple-400 group-hover:scale-110 transition-transform" />
                 </div>
-                <span className="text-sm font-bold uppercase tracking-widest group-hover:text-white transition-colors">{t("hero.trustReached")}</span>
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest group-hover:text-white transition-colors">{t("hero.trustReached")}</span>
               </div>
             </motion.div>
           </motion.div>
 
           {/* Single Full Premium Photo Showcase (No overlapping sad photo) */}
-          <div className="hidden lg:block lg:col-span-5 relative h-[560px] w-full">
+          <div className="hidden lg:block lg:col-span-5 relative h-[480px] w-full">
             <motion.div 
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -144,15 +147,7 @@ export function Hero() {
               {/* Refined gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent opacity-90 group-hover:opacity-75 transition-opacity duration-500"></div>
 
-              {/* Top Tag */}
-              <div className="absolute top-6 left-6 z-20">
-                <div className="inline-flex items-center pr-4 pl-1 py-1.5 rounded-full bg-white/95 backdrop-blur-xl border border-white/20 text-xs font-bold uppercase tracking-widest text-slate-900 shadow-lg">
-                  <div className="relative w-10 h-10 rounded-full bg-white overflow-hidden flex items-center justify-center shadow-md border-2 border-white -ml-2 mr-3 flex-shrink-0">
-                    <img src="/logo2.jpeg" alt="WOLT" className="w-full h-full object-contain scale-[1.4] mix-blend-multiply contrast-110" />
-                  </div>
-                  {t("hero.photoFeatured")}
-                </div>
-              </div>
+
 
               {/* Bottom Card Info Overlay */}
               <div className="absolute bottom-6 left-6 right-6 z-20">

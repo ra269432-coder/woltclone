@@ -1,51 +1,43 @@
+"use client";
+
 import { Calendar, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/api/client";
 
 export default function NewsPage() {
-  const newsItems = [
-    {
-      title: "WOLT Foundation Launches Mobile Clinic in Sunamganj",
-      date: "October 12, 2024",
-      category: "Healthcare",
-      image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
-      excerpt: "In response to recent flooding, we have deployed our largest mobile clinic yet to provide emergency medical support to over 10,000 displaced residents."
-    },
-    {
-      title: "Global Grant Secured for Climate Resilience Program",
-      date: "September 28, 2024",
-      category: "Climate",
-      image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
-      excerpt: "We are thrilled to announce a new partnership with international environmental agencies to plant 1 million trees in the coastal belt by 2026."
-    },
-    {
-      title: "Annual Education Summit 2024 Wraps Up in Dhaka",
-      date: "September 15, 2024",
-      category: "Education",
-      image: "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
-      excerpt: "Over 500 educators and policymakers gathered to discuss the future of inclusive education and our new curriculum distribution plan."
-    },
-    {
-      title: "New Disability Inclusion Training Center Opens",
-      date: "August 30, 2024",
-      category: "Inclusion",
-      image: "https://images.pexels.com/photos/4063618/pexels-photo-4063618.jpeg?auto=compress&cs=tinysrgb&w=800",
-      excerpt: "Our state-of-the-art vocational center in Rajshahi will provide specialized training for 300 adults with disabilities annually."
-    },
-    {
-      title: "Bashundhara Enterprise Reaches 50,000 Farmers",
-      date: "August 10, 2024",
-      category: "Social Enterprise",
-      image: "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=800&q=80",
-      excerpt: "A major milestone for our agricultural enterprise program, providing fair-trade linkages and micro-loans to rural communities."
-    },
-    {
-      title: "Emergency Winter Relief Campaign Announced",
-      date: "July 22, 2024",
-      category: "Humanitarian",
-      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80",
-      excerpt: "As temperatures drop in the northern districts, we are mobilizing resources to distribute 50,000 warm clothing kits."
+  const [newsItems, setNewsItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadNews() {
+      try {
+        const data = await fetchAPI('/api/news/');
+        const fallbackImages = [
+            "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&q=80",
+            "https://images.pexels.com/photos/4063618/pexels-photo-4063618.jpeg?auto=compress&cs=tinysrgb&w=800",
+            "https://images.unsplash.com/photo-1560493676-04071c5f467b?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80"
+        ];
+        
+        setNewsItems(data.map((n: any, idx: number) => ({
+            title: n.title,
+            date: new Date(n.published_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+            category: n.category || "General",
+            image: n.image || fallbackImages[idx % fallbackImages.length],
+            excerpt: n.short_description || n.content.substring(0, 150) + "...",
+            slug: n.slug
+        })));
+      } catch (error) {
+        console.error("Failed to load news:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadNews();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
@@ -91,7 +83,7 @@ export default function NewsPage() {
                   {item.excerpt}
                 </p>
                 <div className="mt-auto">
-                  <Link href="#" className="inline-flex items-center gap-2 text-blue-600 font-bold hover:text-blue-700 transition-colors">
+                  <Link href={`/resource/news/${item.slug}`} className="inline-flex items-center gap-2 text-blue-600 font-bold hover:text-blue-700 transition-colors">
                     Read Full Article <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>

@@ -1,0 +1,111 @@
+{% extends "base/base.html" %}
+
+{% block sidebar %}
+    {% include 'components/sidebar.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-4xl mx-auto relative z-10">
+    <div class="mb-8">
+        <a href="javascript:history.back()" class="inline-flex items-center gap-2 text-slate-400 hover:text-cyan-400 font-semibold text-sm transition-colors mb-4">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Back
+        </a>
+        <h1 class="text-4xl font-extrabold text-white tracking-tight drop-shadow-sm flex items-center gap-3">
+            <div class="p-2 bg-gradient-to-br from-cyan-400/20 to-fuchsia-400/20 rounded-xl">
+                <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+            </div>
+            Review Payslip Request
+        </h1>
+        <p class="text-slate-400 mt-2 font-medium ml-12">Review the details below and approve or reject this request.</p>
+    </div>
+
+    <!-- Request Details Card -->
+    <div class="bg-[#06041c]/60 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-3xl border border-white/10 p-8 mb-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-gradient-to-br from-cyan-400/10 to-fuchsia-400/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <h3 class="text-lg font-bold text-white mb-6 uppercase tracking-wider border-b border-white/10 pb-4">Request Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Employee</p>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center font-bold">
+                        {{ object.employee.name|make_list|first|upper }}
+                    </div>
+                    <div>
+                        <p class="text-white font-semibold">{{ object.employee.name }}</p>
+                        <p class="text-slate-400 text-sm">{{ object.employee.designation|default:"Staff" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Requested Month</p>
+                <p class="text-xl font-bold text-white">{{ object.month|date:"F Y" }}</p>
+            </div>
+            
+            <div class="md:col-span-2 mt-2">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Employee's Reason</p>
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-5 text-slate-300">
+                    {{ object.reason|default:"No reason provided." }}
+                </div>
+            </div>
+            
+            {% if object.attachment %}
+            <div class="md:col-span-2 mt-2">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Attachment</p>
+                <a href="{{ object.attachment.url }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all text-sm font-semibold">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                    View Attached Document
+                </a>
+            </div>
+            {% endif %}
+            
+            <div class="md:col-span-2 mt-2">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Current Status</p>
+                {% if object.status == 'pending' %}
+                    <span class="px-3 py-1 rounded-full text-sm font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">Pending</span>
+                {% elif object.status == 'approved' or object.status == 'generated' %}
+                    <span class="px-3 py-1 rounded-full text-sm font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{{ object.get_status_display }}</span>
+                {% else %}
+                    <span class="px-3 py-1 rounded-full text-sm font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Rejected</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Form -->
+    <div class="bg-[#06041c]/60 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-3xl border border-white/10 p-8 relative overflow-hidden" x-data="{ status: '{{ object.status }}' }">
+        <h3 class="text-lg font-bold text-white mb-6 uppercase tracking-wider border-b border-white/10 pb-4">Take Action</h3>
+        
+        <form method="post" class="relative z-10">
+            {% csrf_token %}
+            
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-slate-200 mb-2">Update Status</label>
+                <select name="status" x-model="status" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition-all">
+                    <option value="pending" class="bg-slate-800">Pending</option>
+                    <option value="approved" class="bg-slate-800">Approved (Generate Payslip)</option>
+                    <option value="rejected" class="bg-slate-800">Rejected</option>
+                    <option value="generated" class="bg-slate-800">Generated</option>
+                </select>
+            </div>
+            
+            <div x-show="status === 'rejected'" x-transition class="mb-6">
+                <label class="block text-sm font-bold text-slate-200 mb-2">Rejection Reason</label>
+                <textarea name="rejection_reason" rows="3" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/50 transition-all" placeholder="Explain why this request is being rejected..."></textarea>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-4 items-center">
+                <a href="{% url 'paysliprequest_list' %}" class="px-6 py-3 rounded-xl font-bold text-slate-400 hover:bg-white/10 hover:text-white transition-colors">
+                    Cancel
+                </a>
+                <button type="submit" class="px-8 py-3 rounded-xl font-bold text-white shadow-[0_4px_20px_0_rgba(0,229,255,0.4)] hover:shadow-[0_8px_30px_rgba(0,229,255,0.3)] bg-gradient-to-r from-cyan-500 to-blue-500 transition-all hover:-translate-y-1 flex items-center gap-2">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

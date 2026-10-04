@@ -1,41 +1,39 @@
+"use client";
+
 import { Quote, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { fetchAPI } from "@/lib/api/client";
 
 export default function StoriesPage() {
-  const stories = [
-    {
-      name: "Rahima Begum",
-      location: "Kurigram District",
-      program: "Women's Empowerment",
-      image: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80",
-      quote: "Before the micro-loan, I couldn't feed my children three times a day. Now, I own three sewing machines and employ two other women from my village.",
-      story: "Rahima was devastated when river erosion took her home. Through our Bashundhara social enterprise, she received a micro-loan to purchase a sewing machine. Today, she runs a successful tailoring business."
-    },
-    {
-      name: "Abdul Karim",
-      location: "Khulna Coast",
-      program: "Climate Resilience",
-      image: "https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&w=800&q=80",
-      quote: "The saline water destroyed our crops for three years. The new seeds and training saved my family from having to migrate to the city.",
-      story: "Abdul is a third-generation farmer who almost lost his livelihood to climate change. Our climate-resilient agriculture training provided him with saline-tolerant seeds, restoring his farm's yield by 150%."
-    },
-    {
-      name: "Sumi Akter",
-      location: "Dhaka Slums",
-      program: "Education",
-      image: "https://images.unsplash.com/photo-1517673132405-a56a62b18caf?auto=format&fit=crop&w=800&q=80",
-      quote: "I never thought someone like me could go to university. The scholarship gave me a chance to dream bigger than my surroundings.",
-      story: "Growing up in a slum, Sumi had to work to support her family. Our inclusive education program recognized her brilliant academic potential and provided a full scholarship. She is now studying engineering."
-    },
-    {
-      name: "Hasan Ali",
-      location: "Sylhet",
-      program: "Disability Inclusion",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80",
-      quote: "Losing my legs in the accident made me feel useless. The wheelchair and the computer training gave me my life back.",
-      story: "After a tragic accident, Hasan fell into severe depression. We provided him with a customized wheelchair and vocational IT training. He now works as a freelance graphic designer, fully supporting his family."
+  const [stories, setStories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadStories() {
+      try {
+        const data = await fetchAPI('/api/stories/');
+        const fallbackImages = [
+            "/images/story_village.jpg"
+        ];
+        
+        setStories(data.map((s: any, idx: number) => ({
+            name: s.title,
+            location: s.author || "Bangladesh",
+            program: "Impact Story",
+            image: s.image || fallbackImages[idx % fallbackImages.length],
+            quote: `"${s.content.substring(0, 100)}..."`,
+            story: s.content,
+            slug: s.slug
+        })));
+      } catch (error) {
+        console.error("Failed to load stories:", error);
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+    loadStories();
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
@@ -43,7 +41,7 @@ export default function StoriesPage() {
       <section className="relative h-[50vh] min-h-[400px] flex items-center justify-center bg-slate-900">
         <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=1600&q=80" 
+            src="/images/story_village.jpg" 
             alt="Stories of Change" 
             className="w-full h-full object-cover opacity-40"
           />
@@ -85,7 +83,7 @@ export default function StoriesPage() {
                   {story.story}
                 </p>
                 <div>
-                  <Link href="#" className="inline-flex items-center gap-2 text-white bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-full font-bold transition-colors shadow-md shadow-pink-600/20">
+                  <Link href={`/resource/story/${story.slug}`} className="inline-flex items-center gap-2 text-white bg-pink-600 hover:bg-pink-700 px-6 py-3 rounded-full font-bold transition-colors shadow-md shadow-pink-600/20">
                     Read Full Story <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>

@@ -1,0 +1,156 @@
+{% extends "ess/ess_base.html" %}
+
+{% block content %}
+<div class="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-[95%] mx-auto space-y-8 relative z-10" x-data="{ searchQuery: '' }">
+
+    <!-- Header Section -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+        <div>
+            <h1 class="text-4xl font-extrabold text-white tracking-tight drop-shadow-sm flex items-center gap-3">
+                <div class="p-2 bg-gradient-to-br from-cyan-400/20 to-fuchsia-400/20 rounded-xl">
+                    <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                {{ page_title|default:"HR Management" }}
+            </h1>
+            <p class="text-slate-400 mt-2 font-medium ml-12">{{ page_subtitle|default:"Manage your foundation staff, records, and requests." }}</p>
+        </div>
+        {% if create_url and not hide_create %}
+        <a href="{{ create_url }}" class="group relative px-6 py-3 rounded-2xl font-bold text-white shadow-[0_4px_20px_0_rgba(0,229,255,0.4)] hover:shadow-[0_8px_30px_rgba(0,229,255,0.3)] hover:-translate-y-1 transition-all duration-300 overflow-hidden flex items-center gap-2">
+            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 transition-transform duration-300 group-hover:scale-105"></div>
+            <span class="relative z-10 flex items-center gap-2">
+                <svg class="w-5 h-5 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                {{ create_button_text|default:"Add New" }}
+            </span>
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Table Container -->
+    <div class="bg-[#06041c]/60 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.2)] rounded-3xl border border-white/10 overflow-hidden relative z-10">
+        
+        <!-- Decorative subtle background -->
+        <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-gradient-to-br from-cyan-400/10 to-fuchsia-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Search and Filters -->
+        <div class="p-6 border-b border-white/10 flex flex-col sm:flex-row items-center gap-4 bg-transparent relative z-10">
+            <div class="relative flex-1 w-full max-w-md group">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="w-5 h-5 text-slate-500 group-focus-within:text-cyan-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <input type="text" x-model="searchQuery" placeholder="Search records..." class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500 text-sm transition-all text-slate-200 placeholder-slate-500 hover:border-cyan-400/50" />
+            </div>
+            <div class="text-sm font-medium text-slate-400 sm:ml-auto flex items-center gap-2">
+                Total: <span class="px-3 py-1 bg-white/10 rounded-lg font-bold text-white border border-white/5">{{ page_obj.paginator.count|default:object_list.count }}</span> records
+            </div>
+        </div>
+        
+        <!-- Dynamic Table -->
+        <div class="overflow-x-auto relative z-10">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-white/5 border-b border-white/10 text-sm text-slate-400">
+                        {% for col in columns %}
+                        <th class="p-5 font-bold tracking-wider uppercase text-xs whitespace-nowrap {% if forloop.last and col == 'Actions' %}text-right{% endif %}">
+                            {{ col }}
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 text-sm bg-transparent">
+                    {% for row in rows %}
+                    <tr class="hover:bg-white/[0.04] transition-colors" x-show="searchQuery === '' || '{{ row.columns|join:' ' |escapejs }}'.toLowerCase().includes(searchQuery.toLowerCase())">
+                        
+                        {% for cell_value in row.columns %}
+                        <td class="p-5 text-slate-300 font-medium">
+                            <!-- Dynamic Content Formatting -->
+                            {% if cell_value == 'Active' or cell_value == 'Approved' or cell_value == 'Completed' or cell_value == 'Paid' %}
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]">{{ cell_value }}</span>
+                            {% elif cell_value == 'On Leave' or cell_value == 'Pending' or cell_value == 'Upcoming' or cell_value == 'Ongoing' or cell_value == 'Draft' %}
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)]">{{ cell_value }}</span>
+                            {% elif cell_value == 'Terminated' or cell_value == 'Rejected' or cell_value == 'Cancelled' or cell_value == 'Failed' or cell_value == 'Expired' %}
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20 shadow-[0_0_10px_rgba(244,63,94,0.1)]">{{ cell_value }}</span>
+                            {% elif cell_value == 'Resigned' %}
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-500/20 text-slate-300 border border-slate-500/30">{{ cell_value }}</span>
+                            {% else %}
+                                {% if forloop.parentloop.counter == 1 and forloop.counter == 2 %}
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-400 flex items-center justify-center font-bold flex-shrink-0 shadow-inner">
+                                            {{ cell_value|make_list|first|upper }}
+                                        </div>
+                                        <span class="font-bold text-white">{{ cell_value }}</span>
+                                    </div>
+                                {% else %}
+                                    {% if cell_value == '-' %}
+                                        <span class="text-slate-500">{{ cell_value }}</span>
+                                    {% else %}
+                                        {{ cell_value }}
+                                    {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        {% endfor %}
+
+                        {% if 'Actions' in columns %}
+                        <td class="p-5 text-right whitespace-nowrap">
+                            <div class="flex items-center justify-end gap-2">
+                                {% if row.extra_actions %}
+                                    {% for action in row.extra_actions %}
+                                    <a href="{{ action.url }}" target="{{ action.target|default:'_self' }}" class="p-2 bg-white/5 border border-white/5 rounded-lg text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all tooltip-trigger" title="{{ action.label }}">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    </a>
+                                    {% endfor %}
+                                {% endif %}
+                                {% if row.edit_url %}
+                                <a href="{{ row.edit_url }}" class="p-2 bg-white/5 border border-white/5 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/30 transition-all tooltip-trigger" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </a>
+                                {% endif %}
+                                {% if row.delete_url %}
+                                <a href="{{ row.delete_url }}" class="p-2 bg-white/5 border border-white/5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 hover:border-rose-500/30 transition-all tooltip-trigger" title="Delete">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{{ columns|length }}" class="p-16 text-center">
+                            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/5 mb-6 border border-white/10 shadow-inner relative">
+                                <div class="absolute inset-0 bg-cyan-400/20 rounded-full blur-md"></div>
+                                <svg class="w-8 h-8 text-slate-400 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+                            </div>
+                            <h3 class="text-white font-extrabold text-xl mb-2">No items found</h3>
+                            <p class="text-slate-400 font-medium text-base mb-6 max-w-sm mx-auto">It looks like there are no records here yet. Get started by creating a new entry.</p>
+                            {% if create_url and not hide_create %}
+                            <a href="{{ create_url }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-cyan-400 font-bold transition-all hover:border-cyan-400/50 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)]">
+                                {{ create_button_text|default:"Add New Entry" }}
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <div class="p-6 border-t border-white/10 bg-transparent flex flex-col sm:flex-row justify-between items-center gap-4 relative z-10">
+            <span class="text-sm font-medium text-slate-400">Showing page <span class="font-bold text-white px-1">{{ page_obj.number }}</span> of {{ page_obj.paginator.num_pages }}</span>
+            <div class="flex gap-2">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all shadow-sm">Prev</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-bold text-slate-300 hover:bg-white/10 hover:text-white hover:border-white/20 transition-all shadow-sm">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
