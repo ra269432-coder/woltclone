@@ -1,7 +1,12 @@
-from django.urls import path
+from django.urls import path, reverse_lazy
+from django.contrib.auth import views as auth_views
 from . import ess_views
 
 urlpatterns = [
+    path('password_change/', auth_views.PasswordChangeView.as_view(
+        template_name='ess/password_change.html', 
+        success_url=reverse_lazy('ess_dashboard')
+    ), name='ess_password_change'),
     path('', ess_views.ESSDashboardView.as_view(), name='ess_dashboard'),
     path('profile/', ess_views.ESSProfileUpdateView.as_view(), name='ess_profile_update'),
     

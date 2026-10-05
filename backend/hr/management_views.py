@@ -677,6 +677,115 @@ def download_pdf_report(request):
         for e in qs:
             data.append([e.employee.name, e.date.strftime('%Y-%m-%d'), f"{e.amount}", e.category, e.status.title()])
             
+    elif report_type == 'Appointment Letter':
+        name = request.GET.get('name', 'Candidate')
+        address = request.GET.get('address', '')
+        mobile = request.GET.get('mobile', '')
+        email = request.GET.get('email', '')
+        date = request.GET.get('date', timezone.now().strftime('%B %d, %Y'))
+        position = request.GET.get('position', 'Associate Web Developer (Full Stack)')
+        salary = request.GET.get('salary', 'BDT 20,000')
+        probation_salary = request.GET.get('probation_salary', 'BDT 25,000')
+        
+        # Styles
+        styles = getSampleStyleSheet()
+        normal = styles['Normal']
+        normal.fontSize = 10
+        normal.leading = 14
+        
+        bold_style = ParagraphStyle('BoldText', parent=normal, fontName='Helvetica-Bold')
+        
+        # We need a new SimpleDocTemplate with portrait and smaller margins
+        doc = SimpleDocTemplate(response, pagesize=letter, rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40)
+        elements = []
+        
+        # Ref & Date
+        ref_date_data = [[f"<b>Ref:</b> WOLT/HR/{timezone.now().strftime('%Y-%m')}/AL-005", f"<b>Date:</b> {date}"]]
+        ref_table = Table(ref_date_data, colWidths=[3*inch, 3*inch])
+        ref_table.setStyle(TableStyle([('ALIGN', (0,0), (0,0), 'LEFT'), ('ALIGN', (1,0), (1,0), 'RIGHT')]))
+        elements.append(ref_table)
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # Recipient Info
+        elements.append(Paragraph("To", normal))
+        elements.append(Paragraph(f"<b>{name}</b>", normal))
+        if address: elements.append(Paragraph(address, normal))
+        if mobile: elements.append(Paragraph(f"Mobile: {mobile}", normal))
+        if email: elements.append(Paragraph(f"Email: {email}", normal))
+        
+        elements.append(Spacer(1, 0.2*inch))
+        elements.append(Paragraph("<b>Subject: <u>Appointment Letter</u></b>", normal))
+        elements.append(Spacer(1, 0.2*inch))
+        
+        # First name for salutation
+        first_name = name.split()[0] if name else ""
+        if "Mr." in name or "Ms." in name:
+            first_name = name.split()[1] if len(name.split()) > 1 else name
+        elements.append(Paragraph(f"<b>Dear {first_name},</b>", normal))
+        elements.append(Spacer(1, 0.1*inch))
+        
+        elements.append(Paragraph(f"We are pleased to formally appoint you as <b>{position}</b> at WOLT, Gulshan Corporate Office, and effective <b>{date}</b>.", normal))
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph("The terms and conditions of your appointment are as follows:", normal))
+        
+        # Body list items
+        list_style = ParagraphStyle('ListStyle', parent=normal, leftIndent=20, leading=14)
+        sublist_style = ParagraphStyle('SubListStyle', parent=normal, leftIndent=40, leading=14)
+        subsublist_style = ParagraphStyle('SubSubListStyle', parent=normal, leftIndent=60, leading=14)
+        
+        elements.append(Paragraph(f"1. <b>Position:</b> {position}", list_style))
+        elements.append(Paragraph(f"2. <b>Date of Joining:</b> {date}", list_style))
+        elements.append(Paragraph("3. <b>Probationary Terms & Conditions:</b>", list_style))
+        elements.append(Paragraph("<b>3.1 Probation Period:</b> 3 months. During this period, your performance will be reviewed.", sublist_style))
+        elements.append(Paragraph("<b>3.2 Working Hours:</b> 10:00 AM – 7:00 PM", sublist_style))
+        elements.append(Paragraph("<b>3.3 Working Days:</b> Saturday to Thursday (<b>Friday</b> will be the weekly holiday)", sublist_style))
+        elements.append(Paragraph("<b>3.4 Dismissal During Probation:</b>", sublist_style))
+        elements.append(Paragraph("<b>3.4.1</b> The Company reserves the right to terminate your employment at any time during the probation period.", subsublist_style))
+        elements.append(Paragraph("<b>3.4.2</b> Such termination may be effected without prior notice, warning, or compensation if your performance, conduct, or compliance is found unsatisfactory or inconsistent with company policies.", subsublist_style))
+        
+        elements.append(Paragraph("4. <b>Monthly Consolidated Salary:</b>", list_style))
+        elements.append(Paragraph(f"i. During probation: <b>{salary}</b>", sublist_style))
+        elements.append(Paragraph(f"ii. Upon successful completion of probation and confirmation of your employment, your salary will be revised to <b>{probation_salary}</b>, subject to performance.", sublist_style))
+        
+        elements.append(Paragraph("5. <b>Festival Bonus:</b> Half of one month's gross salary, effective after confirmation of employment.", list_style))
+        elements.append(Paragraph("6. <b>Other benefits:</b> You will be entitled to other perks and benefits as per WOLT's policy after confirmation of your employment.", list_style))
+        elements.append(Paragraph("7. <b>Documents required:</b> Your joining will be effective upon submission of the following documents:", list_style))
+        elements.append(Paragraph("a. All educational & experience certificates (Original & Photocopies)", sublist_style))
+        elements.append(Paragraph("b. Release/Clearance letter (from last employer)", sublist_style))
+        elements.append(Paragraph("c. National ID card/ Smart Card photocopy (Own & Nominee)", sublist_style))
+        elements.append(Paragraph("d. Recent color photo (02 copies)", sublist_style))
+        elements.append(Paragraph("e. Any kind of professional certificate, training certificate (if any)", sublist_style))
+        elements.append(Paragraph("f. Visiting card (if any which is used in previous company)", sublist_style))
+        elements.append(Paragraph("g. Pay slip from last employer", sublist_style))
+        
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph("Your employment will be governed by the standing rules and policies of the company.", normal))
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph("Please sign and return a copy of this letter as acknowledgment and acceptance of your appointment.", normal))
+        
+        elements.append(Spacer(1, 0.2*inch))
+        elements.append(Paragraph("<b>Thanking you,</b>", normal))
+        elements.append(Spacer(1, 0.4*inch))
+        elements.append(Paragraph("<b>Chairman</b><br/>Way of Light Trust", normal))
+        
+        elements.append(Spacer(1, 0.3*inch))
+        elements.append(Paragraph("<b>Acknowledgement & Acceptance</b>", bold_style))
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph(f"I hereby acknowledge and accept my appointment as <b>{position}</b> at WOLT, effective from the mentioned date of joining, with the compensation and benefits as stated above.", normal))
+        
+        elements.append(Spacer(1, 0.2*inch))
+        elements.append(Paragraph("<b>Signature:</b> _________________________ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Date:</b> _________________", normal))
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph("<b>Full Name:</b> ________________________________________________________", normal))
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph("<b>Address:</b> __________________________________________________________", normal))
+        elements.append(Spacer(1, 0.1*inch))
+        elements.append(Paragraph("<b>NID No:</b> ___________________________________________________________", normal))
+        
+        # Build document early without table
+        doc.build(elements)
+        return response
+        
     else:
         # Fallback generic data
         data.append(['Notice'])

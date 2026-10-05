@@ -29,44 +29,57 @@ export default function Page() {
           
           {/* Content Area */}
           <div className="p-8 sm:p-12">
-            <div className="prose prose-slate max-w-none prose-lg">
-              <p className="text-xl text-slate-600 leading-relaxed mb-8 font-medium">
-                {"Our distinguished board members provide oversight, strategic guidance, and ensure we uphold the highest standards of governance."}
-              </p>
-
-              <div className="h-px bg-slate-100 w-full my-10"></div>
+            
+            {/* Leadership Profile Section */}
+            <div className="flex flex-col md:flex-row gap-12 items-start">
               
-              {/* Leadership Message Section */}
-              <div className="mb-12 rounded-3xl overflow-hidden shadow-sm border border-slate-100">
-                <ChairmanMessage />
+              {/* Image Column */}
+              <div className="w-full md:w-1/3 shrink-0">
+                <div className="rounded-3xl overflow-hidden shadow-xl border-4 border-white">
+                  <img 
+                    src="/images/chairman.png" 
+                    alt="Grupado Dash - Chairman" 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+                <div className="mt-6 text-center md:text-left">
+                  <h2 className="text-2xl font-bold text-slate-900">Grupado Dash</h2>
+                  <p className="text-blue-600 font-semibold mb-2">Chairman & Founder</p>
+                  <p className="text-sm text-slate-500">Prestonwood Baptist Church<br/>Way of Light Trust</p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 mb-12">
-                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 hover:border-blue-200 transition-all duration-300 group flex flex-col h-full">
-                  <div className="w-full h-52 rounded-2xl overflow-hidden mb-6 relative">
-                    <img 
-                      src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80" 
-                      alt="Strategic Oversight" 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-blue-900/10 group-hover:bg-transparent transition-colors duration-500"></div>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-blue-700 transition-colors px-1">{"Strategic Oversight"}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed px-1">{"Ensuring long-term sustainability and adherence to our core mission."}</p>
+              {/* Biography Column */}
+              <div className="w-full md:w-2/3 prose prose-slate prose-lg max-w-none">
+                <p className="text-lg leading-relaxed text-slate-700 first-letter:text-5xl first-letter:font-bold first-letter:text-blue-700 first-letter:mr-1 first-letter:float-left">
+                  Born on 7 September 1952, in the quiet rural stretches of Satkhira—where the Bay of Bengal kisses the land and the Sundarbans breathe with ancient whispers—Grupado Dash entered the world within a devout Hindu family. His childhood was marked by reverence, rituals, and the weight of tradition. Yet, even in those tender years, he felt a stirring—an unseen hand guiding him, a voice calling him toward a truth beyond the boundaries of his inherited faith.
+                </p>
+
+                <p className="text-lg leading-relaxed text-slate-700 mt-6">
+                  As a young man, he wandered through questions that gnawed at his soul: Why are we sent to earth? What is the message of God? Where does the light dwell? He sought answers in the teachings of priests, masters, and scriptures, but the yearning remained unquenched.
+                </p>
+
+                <p className="text-lg leading-relaxed text-slate-700 mt-6">
+                  At eighteen, a local pastor placed the Bible in his hands. In its pages, he discovered not merely words, but a living flame—the story of Jesus Christ, the Redeemer. That flame grew into a fire that consumed his doubts and illuminated his path. Against the tide of family opposition, against the loneliness of rejection, he chose the narrow road of faith. By twenty-one, he embraced Christianity fully, bearing the cost of estrangement yet fearing no one but God the Father.
+                </p>
+
+                <div className="my-10 pl-6 border-l-4 border-blue-600 bg-blue-50/50 py-4 pr-4 rounded-r-xl">
+                  <p className="text-xl italic font-medium text-slate-800 m-0">
+                    "His conversion was not a quiet act but a declaration of devotion. His family turned against him, but he stood unshaken, anchored in the love of Christ."
+                  </p>
                 </div>
-                
-                <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-pink-900/5 hover:border-pink-200 transition-all duration-300 group flex flex-col h-full">
-                  <div className="w-full h-52 rounded-2xl overflow-hidden mb-6 relative">
-                    <img 
-                      src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=80" 
-                      alt="Transparency & Accountability" 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-pink-900/10 group-hover:bg-transparent transition-colors duration-500"></div>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-3 group-hover:text-pink-700 transition-colors px-1">{"Transparency & Accountability"}</h3>
-                  <p className="text-slate-600 text-sm leading-relaxed px-1">{"Committing to ethical practices and transparent reporting to our stakeholders."}</p>
-                </div>
+
+                <p className="text-lg leading-relaxed text-slate-700">
+                  From those days of youthful defiance and spiritual hunger, he rose into leadership, becoming a founding pastor and later the Chairman of Prestonwood Baptist Church. His vision was never small—he dreamed of a church of all nations, a sanctuary where every community in Bangladesh might hear the gospel and find belonging.
+                </p>
+
+                <p className="text-lg leading-relaxed text-slate-700 mt-6">
+                  Through decades of ministry, his life has been marked by integrity, truthfulness, and a transparent heart. He is known for the revelatory teaching gift of the Holy Spirit upon him, and for his unwavering commitment to the spiritual growth and maturity of believers. His marriage, spanning over thirty-six years, has been a testament to faith and partnership, blessed with children who carry forward the legacy of devotion.
+                </p>
+
+                <p className="text-lg leading-relaxed text-slate-700 mt-6">
+                  Grupado Dash’s journey is not merely a biography—it is a parable of struggle and light. From the mangrove shadows of Satkhira to the pulpit of a church that seeks to embrace all nations, his life tells of a man who walked through rejection, wrestled with doubt, and emerged as a bearer of hope. His story is the story of the Way of Light Trust itself: a beacon for the people of Bangladesh, born out of pain, sustained by faith, and shining with the promise of redemption.
+                </p>
               </div>
             </div>
             

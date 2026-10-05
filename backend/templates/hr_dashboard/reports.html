@@ -5,13 +5,24 @@
     isModalOpen: false,
     selectedReport: '',
     selectedEmployee: 'all',
+    appName: '',
+    appAddress: '',
+    appMobile: '',
+    appEmail: '',
+    appDate: '',
+    appPosition: '',
+    appSalary: '',
+    appProbationSalary: '',
     openModal(reportName) {
         this.selectedReport = reportName;
         this.selectedEmployee = 'all';
         this.isModalOpen = true;
     },
     submitDownload() {
-        const url = `/management/hr/reports/download/?report=${encodeURIComponent(this.selectedReport)}&employee=${this.selectedEmployee}`;
+        let url = `/management/hr/reports/download/?report=${encodeURIComponent(this.selectedReport)}&employee=${this.selectedEmployee}`;
+        if (this.selectedReport === 'Appointment Letter') {
+            url += `&name=${encodeURIComponent(this.appName)}&address=${encodeURIComponent(this.appAddress)}&mobile=${encodeURIComponent(this.appMobile)}&email=${encodeURIComponent(this.appEmail)}&date=${encodeURIComponent(this.appDate)}&position=${encodeURIComponent(this.appPosition)}&salary=${encodeURIComponent(this.appSalary)}&probation_salary=${encodeURIComponent(this.appProbationSalary)}`;
+        }
         window.open(url, '_blank');
         this.isModalOpen = false;
     }
@@ -241,6 +252,23 @@
             </button>
         </div>
 
+        <!-- Report 13: Appointment Letter -->
+        <div class="bg-[#06041c]/60 backdrop-blur-xl rounded-3xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.2)] p-6 hover:-translate-y-1 transition-transform duration-300 group animate-slide-up" style="animation-delay: 750ms;">
+            <div class="flex items-start gap-4 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-yellow-500/20 to-yellow-500/5 text-yellow-400 border border-yellow-500/30 flex items-center justify-center shrink-0">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1">Appointment Letter</h3>
+                    <p class="text-sm text-slate-400 font-medium">Generate personalized appointment letters</p>
+                </div>
+            </div>
+            <button class="w-full py-3 bg-[#06041c]/40 hover:bg-white/10 border border-white/10 rounded-xl text-slate-300 hover:text-white font-bold text-sm transition-all flex items-center justify-center gap-2 group-hover:border-yellow-500/30" @click="openModal('Appointment Letter')">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Download PDF
+            </button>
+        </div>
+
     </div>
 
 <!-- Modal Backdrop -->
@@ -271,7 +299,7 @@
                 </div>
                 
                 <form @submit.prevent="submitDownload">
-                    <div class="mb-6 relative">
+                    <div class="mb-6 relative" x-show="selectedReport !== 'Appointment Letter'">
                         <label class="block text-sm font-medium text-slate-300 mb-2">Select Employee</label>
                         <select x-model="selectedEmployee" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none cursor-pointer">
                             <option value="all" class="bg-[#0f0a2a] text-white">All Employees</option>
@@ -281,6 +309,45 @@
                         </select>
                         <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 pt-7 text-slate-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    
+                    <div x-show="selectedReport === 'Appointment Letter'" class="space-y-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Candidate Name</label>
+                            <input type="text" x-model="appName" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Enter Name">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Address</label>
+                            <input type="text" x-model="appAddress" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="e.g. House 12, Road 9, Dhaka">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Mobile</label>
+                                <input type="text" x-model="appMobile" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Enter Mobile">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Email</label>
+                                <input type="email" x-model="appEmail" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="Enter Email">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Date of Joining</label>
+                            <input type="date" x-model="appDate" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Job Position</label>
+                            <input type="text" x-model="appPosition" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="e.g. Associate Web Developer (Full Stack)">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">Initial Salary</label>
+                                <input type="text" x-model="appSalary" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="e.g. BDT 20,000">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-2">After Probation Salary</label>
+                                <input type="text" x-model="appProbationSalary" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50" placeholder="e.g. BDT 25,000">
+                            </div>
                         </div>
                     </div>
                     

@@ -29,7 +29,13 @@ export default function Page() {
         return res.json();
       })
       .then(data => {
-        setEmployees(data);
+        // Filter out HR Admin and System Admin (or any user/designation with 'admin')
+        const filteredEmployees = data.filter((emp: Employee) => {
+          const designation = (emp.designation || '').toLowerCase();
+          const name = (emp.name || '').toLowerCase();
+          return !designation.includes('admin') && !name.includes('admin');
+        });
+        setEmployees(filteredEmployees);
         setLoading(false);
       })
       .catch(err => {
